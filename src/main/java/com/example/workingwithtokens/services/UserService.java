@@ -11,9 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -34,7 +32,7 @@ public class UserService {
 
 
     public User saveUser(String username,String password,String email,String lastName,String firstName,String phone) {
-        Set<Authority> authorities=Set.of(authorRepository.findAuthoritiesByAuthority("ROLE_USER"));
+        Set<Authority> authorities=new HashSet<>(Collections.singletonList(authorRepository.findAuthoritiesByAuthority("ROLE_USER")));
 
         User userEntity=new User(
                 username,
@@ -50,7 +48,7 @@ public class UserService {
         return userRepository.save(userEntity);
     }
     public User saveUserVk(String username,String email,String lastName,String firstName) {
-        Set<Authority> authorities=Set.of(authorRepository.findAuthoritiesByAuthority("ROLE_USER"));
+        Set<Authority> authorities=new HashSet<>(Collections.singletonList(authorRepository.findAuthoritiesByAuthority("ROLE_USER")));
 
         User userEntity=new User(
                 username,
@@ -65,7 +63,7 @@ public class UserService {
         return userRepository.save(userEntity);
     }
     public User saveUserGoogle(String username,String email,String lastName,String firstName) {
-        Set<Authority> authorities=Set.of(authorRepository.findAuthoritiesByAuthority("ROLE_USER"));
+        Set<Authority> authorities=new HashSet<>(Collections.singletonList(authorRepository.findAuthoritiesByAuthority("ROLE_USER")));
 
         User userEntity=new User(
                 username,
