@@ -37,7 +37,7 @@ public class VkAuthController extends AbstractController {
     @RequestMapping("/auth")
     public RedirectView registrateViaVk() {
         final String port = environment.getProperty("server.port");
-        final String address = environment.getProperty("server.address");
+        final String address = environment.getProperty("external.address");
         return new RedirectView(
                 "https://oauth.vk.com/authorize" +
                         "?client_id=" + environment.getProperty("vk.client-id") +
@@ -56,7 +56,7 @@ public class VkAuthController extends AbstractController {
 
 
         if (error == null && !code.isEmpty()) {
-            final String address = environment.getProperty("server.address");
+            final String address = environment.getProperty("external.address");
             final String port = environment.getProperty("server.port");
             HttpClient client = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet(String.format("https://oauth.vk.com/token" +

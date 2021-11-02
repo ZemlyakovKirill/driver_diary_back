@@ -34,11 +34,11 @@ public class GoogleAuthController extends AbstractController {
     @RequestMapping("/auth")
     public RedirectView auth() {
         final String port = environment.getProperty("server.port");
-        final String address = environment.getProperty("server.address");
+        final String address = environment.getProperty("external.address");
         return new RedirectView(
                 "https://accounts.google.com/o/oauth2/v2/auth" +
                         "?client_id=" + environment.getProperty("google.client-id") +
-                        "&redirect_uri=https://" + address + ":" + port + "/google/accessing" +
+                        "&redirect_uri=https://" + address + ".xip.io:" + port + "/google/accessing" +
                         "&response_type=code" +
                         "&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
         );
@@ -47,7 +47,7 @@ public class GoogleAuthController extends AbstractController {
     @RequestMapping("/accessing")
     public ResponseEntity<String> accessTokenRecieving(@RequestParam("code") String code) throws IOException {
         final String port = environment.getProperty("server.port");
-        final String address = environment.getProperty("server.address");
+        final String address = environment.getProperty("external.address");
         HttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("https://oauth2.googleapis.com/token");
         List<NameValuePair> params = new ArrayList<>();
@@ -55,7 +55,7 @@ public class GoogleAuthController extends AbstractController {
         params.add(new BasicNameValuePair("client_id", environment.getProperty("google.client-id")));
         params.add(new BasicNameValuePair("client_secret", environment.getProperty("google.secret")));
         params.add(new BasicNameValuePair("grant_type", "authorization_code"));
-        params.add(new BasicNameValuePair("redirect_uri", "https://" + address + ":" + port + "/google/accessing"));
+        params.add(new BasicNameValuePair("redirect_uri", "https://" + address + ".xip.io:" + port + "/google/accessing"));
         httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
         HttpResponse response = client.execute(httpPost);
