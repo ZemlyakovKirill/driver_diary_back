@@ -84,7 +84,7 @@ public class VkAuthController extends AbstractController {
             params.add(new BasicNameValuePair("access_token", access_token));
             params.add(new BasicNameValuePair("v", "5.131"));
 
-            httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+            httpPost.setEntity(new UrlEncodedFormEntity(params, "Windows-1251"));
             response = client.execute(httpPost);
             responseEntity = response.getEntity();
             JsonObject responseUserData = new JsonParser().parse(new InputStreamReader(responseEntity.getContent())).
