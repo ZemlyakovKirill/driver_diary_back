@@ -115,7 +115,7 @@ public class VkAuthController extends AbstractController {
 
     private ResponseEntity<String> loginVK(String username) {
         User user = userService.findByUsername(username);
-        if (user != null) {
+        if (user != null && user.getVk()) {
             String token = jwtProvider.generateToken(username);
             return responseSuccess("response", token);
         } else

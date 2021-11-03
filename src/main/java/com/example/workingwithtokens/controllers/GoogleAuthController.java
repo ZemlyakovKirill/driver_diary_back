@@ -38,7 +38,7 @@ public class GoogleAuthController extends AbstractController {
         return new RedirectView(
                 "https://accounts.google.com/o/oauth2/v2/auth" +
                         "?client_id=" + environment.getProperty("google.client-id") +
-                        "&redirect_uri=https://" + address + ".xip.io:" + port + "/google/accessing" +
+                        "&redirect_uri=https://" + address + ":" + port + "/google/accessing" +
                         "&response_type=code" +
                         "&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
         );
@@ -55,7 +55,7 @@ public class GoogleAuthController extends AbstractController {
         params.add(new BasicNameValuePair("client_id", environment.getProperty("google.client-id")));
         params.add(new BasicNameValuePair("client_secret", environment.getProperty("google.secret")));
         params.add(new BasicNameValuePair("grant_type", "authorization_code"));
-        params.add(new BasicNameValuePair("redirect_uri", "https://" + address + ".xip.io:" + port + "/google/accessing"));
+        params.add(new BasicNameValuePair("redirect_uri", "https://" + address + ":" + port + "/google/accessing"));
         httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
         HttpResponse response = client.execute(httpPost);
@@ -88,16 +88,15 @@ public class GoogleAuthController extends AbstractController {
             if (firstName.matches("[A-ZА-Я][a-zа-я]{1,99}") &&
                     lastName.matches("[A-ZА-Я][a-zа-я]{1,99}")) {
                 userService.saveUserGoogle(username, email, lastName, firstName);
-            }
-            else
-                return responseBad("response","Last name or First name is invalid");
+            } else
+                return responseBad("response", "Last name or First name is invalid");
         }
         return loginGoogleUser(username);
     }
 
     public ResponseEntity<String> loginGoogleUser(String username) {
         User user = userService.findByUsername(username);
-        if (user != null) {
+        if (user != null && user.getGoogle()) {
             String token = jwtProvider.generateToken(username);
             return responseSuccess("response", token);
         } else
