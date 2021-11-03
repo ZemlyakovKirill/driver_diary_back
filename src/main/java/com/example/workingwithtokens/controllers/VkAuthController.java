@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -102,6 +103,10 @@ public class VkAuthController extends AbstractController {
     }
 
     private ResponseEntity<String> registrateUserVk(String username, String last_name, String first_name, String email) {
+        System.out.println(username);
+        System.out.println(last_name);
+        System.out.println(first_name);
+        System.out.println(email);
         if (userService.findByUsernameWithoutGoogle(username) == null) {
             userService.saveUserVk(
                     username,
