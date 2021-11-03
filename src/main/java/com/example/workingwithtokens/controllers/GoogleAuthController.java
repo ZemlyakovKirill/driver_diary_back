@@ -34,7 +34,7 @@ public class GoogleAuthController extends AbstractController {
     @RequestMapping("/auth")
     public RedirectView auth() {
         final String port = environment.getProperty("server.port");
-        final String address = environment.getProperty("external.address");
+        final String address = environment.getProperty("redirect.address-for-oauth");
         return new RedirectView(
                 "https://accounts.google.com/o/oauth2/v2/auth" +
                         "?client_id=" + environment.getProperty("google.client-id") +
@@ -47,7 +47,7 @@ public class GoogleAuthController extends AbstractController {
     @RequestMapping("/accessing")
     public ResponseEntity<String> accessTokenRecieving(@RequestParam("code") String code) throws IOException {
         final String port = environment.getProperty("server.port");
-        final String address = environment.getProperty("external.address");
+        final String address = environment.getProperty("redirect.address-for-oauth");
         HttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("https://oauth2.googleapis.com/token");
         List<NameValuePair> params = new ArrayList<>();

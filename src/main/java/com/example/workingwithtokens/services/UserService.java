@@ -99,6 +99,10 @@ public class UserService {
         return null;
     }
 
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
     public Iterable<User> findAll(){
         return userRepository.findAll();
     }
