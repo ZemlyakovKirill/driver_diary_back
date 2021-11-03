@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
@@ -14,6 +15,7 @@ import java.util.concurrent.Executor;
 @EnableAsync(proxyTargetClass = true)
 public class WorkingWithTokensApplication {
     public static void main(String[] args) {
+        Locale.setDefault(new Locale("ru"));
         SpringApplication.run(WorkingWithTokensApplication.class, args);
     }
 
