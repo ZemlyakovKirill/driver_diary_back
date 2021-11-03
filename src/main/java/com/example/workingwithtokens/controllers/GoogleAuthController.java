@@ -84,6 +84,10 @@ public class GoogleAuthController extends AbstractController {
 
     public ResponseEntity<String> registrateGoogleUser(String lastName, String firstName, String email) {
         final String username = email.split("@")[0];
+        System.out.println(username);
+        System.out.println(lastName);
+        System.out.println(firstName);
+        System.out.println(email);
         if (userService.findByUsernameWithoutVk(username) == null) {
             if (firstName.matches("[A-ZА-Я][a-zа-я]{1,99}") &&
                     lastName.matches("[A-ZА-Я][a-zа-я]{1,99}")) {
