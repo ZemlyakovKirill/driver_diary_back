@@ -3,16 +3,8 @@ package com.example.workingwithtokens.configs;
 import com.example.workingwithtokens.filters.ExceptionHandlerFilter;
 import com.example.workingwithtokens.filters.JwtFilter;
 import com.example.workingwithtokens.services.MyUserDetailsService;
-import org.apache.catalina.Context;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
-import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,18 +12,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import sun.security.util.SecurityProperties;
-
-import java.net.URI;
-import java.util.List;
 
 @EnableWebSecurity
 public class APISecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private SecurityProperties securityProperties;
 
     @Autowired
     private ExceptionHandlerFilter exceptionHandlerFilter;
@@ -51,10 +35,10 @@ public class APISecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/register", "/auth/login").permitAll()
-                .antMatchers("/user/**").hasAnyRole("ADMIN","USER")
+                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandlerFilter,JwtFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, JwtFilter.class)
                 .requiresChannel().anyRequest().requiresSecure();
     }
 
