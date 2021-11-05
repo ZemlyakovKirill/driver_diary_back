@@ -23,5 +23,5 @@ jobs:
             docker build -t driver_diary_build .
             docker network disconnect spring-net mysqldb
             docker network connect spring-net mysqldb
-            docker run -d -p 8080:8080 --name driver_app --net spring-net -e MYSQL_HOST=mysqldb -e MYSQL_USER=${{ secrets.DEPLOY_MYSQL_USERNAME }} -e MYSQL_PASSWORD=${{ secrets.DEPLOY_SERVER_PASSWORD }} driver_diary_build 
+            docker run -d -p 8080:8080 --name driver_app --net spring-net -e MYSQL_HOST=mysqldb -e MYSQL_USER=${{ secrets.DEPLOY_MYSQL_USERNAME }} -e MYSQL_PASSWORD=${{ secrets.DEPLOY_MYSQL_PASSWORD }} driver_diary_build
             
