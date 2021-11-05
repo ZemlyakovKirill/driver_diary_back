@@ -13,4 +13,4 @@ COPY --from=build /home/gradle/src/build/libs/*.jar /app/
 
 RUN ls /app
 
-ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/driver:1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/driver-0.0.1-SNAPSHOT.jar"]
