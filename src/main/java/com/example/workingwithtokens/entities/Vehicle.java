@@ -18,48 +18,48 @@ public class Vehicle implements Comparable<Vehicle> {
 
     @Expose
     @Column(name = "mark", length = 100, nullable = false)
-    @Size(max = 100, message = "Mark has to be less than 100")
-    @NotNull(message = "Mark has to be not null")
+    @Size(max = 100, message = "Длина поля Марка ТС должно быть меньше или равно 100 символам")
+    @NotNull(message = "Марка ТС не может быть нулевой")
     private String mark;
 
     @Expose
     @Column(name = "model", length = 100, nullable = false)
-    @Size(max = 100, message = "Model has to be less than 100")
-    @NotNull(message = "Model to be not null")
+    @Size(max = 100, message = "Длина поля Модель ТС должно быть меньше или равно 100 символам")
+    @NotNull(message = "Модель ТС не может быть нулевой")
     private String model;
 
     @Expose
     @Column(name = "generation", length = 20)
-    @Size(max = 20, message = "Generation has to be less than 20")
+    @Size(max = 20, message = "Поколение автомобиля должно быть меньше или равно 20 символам")
     private String generation;
 
     @Expose
     @Column(name = "consumption_city", nullable = false)
-    @Min(value=0,message = "Consumption City has to be positive")
-    @NotNull(message = "Consumption City has to be not null")
+    @Min(value=0,message = "Городской расход должен быть положительным")
+    @NotNull(message = "Городской расход не может быть нулевым")
     private Float consumptionCity;
 
     @Expose
     @Column(name = "consumption_route", nullable = false)
-    @Min(value=0,message = "Consumption Route has to be positive")
-    @NotNull(message = "Consumption Route has to be not null")
+    @Min(value=0,message = "Расход на трассе должен быть положительным")
+    @NotNull(message = "Расход на трассе не может быть нулевым")
     private Float consumptionRoute;
 
     @Expose
     @Column(name = "consumption_mixed", nullable = false)
-    @Min(value=0,message = "Consumption Mixed has to be positive")
-    @NotNull(message = "Consumption Mixed has to be not null")
+    @Min(value=0,message = "Смешанный цикл должен быть положительным")
+    @NotNull(message = "Смешанный цикл не может быть нулевым")
     private Float consumptionMixed;
 
     @Expose
     @Column(name = "fuel_capacity", nullable = false)
-    @Min(value=0,message = "Fuel Capacity has to be positive")
-    @NotNull(message = "Fuel Capacity has to be not null")
+    @Min(value=0,message = "Запас топлива должен быть положительным")
+    @NotNull(message = "Запас топлива не может быть нулевым")
     private Float fuelCapacity;
 
     @Expose
     @Column(name = "license_plate_number", length = 20)
-    @Size(max = 20, message = "License Plate Number has to be less than 20")
+    @Size(max = 20, message = "Гос. номер должен быть меньше 20 символов")
     private String licensePlateNumber;
 
     public Vehicle(String mark, String model, Float consumptionCity, Float consumptionRoute, Float consumptionMixed, Float fuelCapacity) {

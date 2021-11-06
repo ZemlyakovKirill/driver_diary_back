@@ -24,8 +24,8 @@ public class UserNote {
 
     @Expose
     @Column(name = "description", nullable = false, length = 100)
-    @NotNull(message = "Description has to be not null")
-    @Size(max = 100, message = "Description has to be less than 100")
+    @NotNull(message = "Описание не может быть нулевым")
+    @Size(max = 100, message = "Длина описания должна быть меньше или равна 100 символам")
     private String description;
 
     @Expose
@@ -34,21 +34,21 @@ public class UserNote {
 
     @Expose
     @Column(name="end_date",nullable = false)
-    @NotNull(message = "Finish date has to be not null")
+    @NotNull(message = "Дедлайн должен не может быть нулевым")
     private Date endDate;
 
     @Expose
     @Column(name="is_cost",nullable = false)
-    @NotNull(message = "Is cost has to be not null")
+    @NotNull(message = "Поле является ли запись расходом не может быть нулевой")
     private boolean isCost;
 
     @Expose
     @Column(name="is_completed",nullable = false)
-    @NotNull(message = "Finish date has to be not null")
+    @NotNull(message = "Поле выполнена ли заметка не может быть нулевым")
     private boolean isCompleted;
 
     @ManyToOne
     @JoinColumn(name="user_id",nullable = false)
-    @NotNull(message = "User has to be not null")
+    @NotNull(message = "Пользователь не может быть нулевым")
     private User user;
 }

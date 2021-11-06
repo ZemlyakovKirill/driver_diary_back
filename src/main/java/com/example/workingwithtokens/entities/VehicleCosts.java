@@ -3,6 +3,7 @@ package com.example.workingwithtokens.entities;
 import com.google.gson.annotations.Expose;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -17,12 +18,13 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
 
     @Expose
     @Column(name = "type", length = 100, nullable = false)
-    @NotNull(message = "Type has to be not null")
+    @NotNull(message = "Тип расхода не может быть нулевым")
     private String type;
 
     @Expose
     @Column(name = "value", nullable = false)
-    @NotNull(message = "Value has to be not null")
+    @Min(value = 0,message = "Значение расхода не может быть отрицательным")
+    @NotNull(message = "Значение расхода не может быть нулевым")
     private Float value;
 
     @Expose
@@ -31,7 +33,7 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
 
     @ManyToOne
     @JoinColumn(name = "ownership_id", nullable = false)
-    @NotNull(message = "Ownership Id has to be not null")
+    @NotNull(message = "Расход должен принадлежать пользователю")
     private UserVehicle userVehicle;
 
     public VehicleCosts() {

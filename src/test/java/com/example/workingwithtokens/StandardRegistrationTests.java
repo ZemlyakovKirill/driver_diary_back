@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,11 +33,11 @@ public class StandardRegistrationTests {
     @Test
     public void registrationWithoutPhone() throws Exception {
         this.mockMvc.perform(get("https://localhost:8080/auth/registrate")
-                        .param("username","ivanov")
-                        .param("password","12345")
-                        .param("lname","Иванов")
-                        .param("email","ivano@ivan.ru")
-                        .param("fname","Иван"))
+                        .param("username", "ivanov")
+                        .param("password", "12345")
+                        .param("lname", "Иванов")
+                        .param("email", "ivano@ivan.ru")
+                        .param("fname", "Иван"))
                 .andDo(System.out::println)
                 .andExpect(status().is(201)).andDo(System.out::println);
     }
@@ -46,12 +45,12 @@ public class StandardRegistrationTests {
     @Test
     public void registrationWithPhone() throws Exception {
         this.mockMvc.perform(get("https://localhost:8080/auth/registrate")
-                        .param("username","ivano")
-                        .param("password","12345")
-                        .param("lname","Иванов")
-                        .param("email","ivanov@ivan.ru")
-                        .param("fname","Иван")
-                        .param("phone","79992654055"))
+                        .param("username", "ivano")
+                        .param("password", "12345")
+                        .param("lname", "Иванов")
+                        .param("email", "ivanov@ivan.ru")
+                        .param("fname", "Иван")
+                        .param("phone", "79992654055"))
                 .andDo(System.out::println)
                 .andExpect(status().is(201)).andDo(System.out::println);
     }
@@ -59,12 +58,12 @@ public class StandardRegistrationTests {
     @Test
     public void registrationWithWrongParams() throws Exception {
         this.mockMvc.perform(get("https://localhost:8080/auth/registrate")
-                        .param("username","i")
-                        .param("password","1")
-                        .param("lname","И")
-                        .param("email","i")
-                        .param("fname","И")
-                        .param("phone","7"))
+                        .param("username", "i")
+                        .param("password", "1")
+                        .param("lname", "И")
+                        .param("email", "i")
+                        .param("fname", "И")
+                        .param("phone", "7"))
                 .andExpect(status().is(400)).andDo(System.out::println);
     }
 

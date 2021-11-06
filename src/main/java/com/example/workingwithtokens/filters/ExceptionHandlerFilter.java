@@ -25,21 +25,21 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         }catch (ExpiredJwtException e) {
             response.setHeader("Content-Type","application/json");
             response.setStatus(403);
-            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Expired Toke"));
+            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Токен является просроченным"));
         }catch (MalformedJwtException e) {
             response.setHeader("Content-Type","application/json");
             response.setStatus(403);
-            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Malformed Token"));
+            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Поврежденный токен"));
         }catch (UnsupportedJwtException e){
             response.setHeader("Content-Type","application/json");
             response.setStatus(403);
-            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Unsupported token"));
+            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Токен не поддерживается"));
         }catch (IllegalArgumentException e){
 
         }catch(SignatureException e){
             response.setHeader("Content-Type","application/json");
             response.setStatus(403);
-            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Invalid Token Signature"));
+            response.getWriter().write(AbstractController.responseString(HttpStatus.FORBIDDEN,"response","Неправильная сигнатура токена"));
         }
     }
 }

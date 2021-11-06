@@ -17,12 +17,12 @@ public class UserVehicle {
     @Expose
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vehicle_id",nullable = false)
-    @NotNull(message = "Vehicle Id has to be not null")
+    @NotNull(message = "Id транспортного средства не может быть нулевым")
     private Vehicle vehicle;
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id",nullable = false)
-    @NotNull(message="User Id has to be not null")
+    @NotNull(message="Id пользователя не может быть нулевым")
     private User user;
 
     @Expose

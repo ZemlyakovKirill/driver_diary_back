@@ -17,24 +17,24 @@ public class AcceptedMark {
 
     @Expose
     @Column(name="type",nullable = false,length = 50)
-    @NotNull(message="Mark type has to be not null")
-    @Size(max=50,message = "Mark type has to less than 50")
+    @NotNull(message="Тип марки не может быть нулевой")
+    @Size(max=50,message = "Длина типа марки ТС должна быть меньше или равна 50 символам")
     private String type;
 
     @Expose
     @Column(name="lat",nullable = false)
-    @NotNull(message="Latitude has to be not null")
+    @NotNull(message="Широта не может быть нулевой")
     private Float lat;
 
     @Expose
     @Column(name="lon",nullable = false)
-    @NotNull(message="Longitude has to be not null")
+    @NotNull(message="Долгота не может быть нулевой")
     private Float lon;
 
     @Expose
     @Column(name="name",nullable=false,length = 100)
-    @Pattern(regexp = "[0-9A-zА-я]{1,100}",message = "Name length has to be between [1,100]")
-    @NotNull(message = "Name has to be not null")
+    @Pattern(regexp = "[0-9A-zА-я]{1,100}",message = "Длина наименования марки должна быть в диапазоне от 1 до 100 символов")
+    @NotNull(message = "Наименование не может быть нулевым")
     private String name;
 
     public AcceptedMark(String type, Float lat, Float lon, String name) {

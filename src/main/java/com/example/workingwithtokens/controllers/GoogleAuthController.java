@@ -46,40 +46,42 @@ public class GoogleAuthController extends AbstractController {
 
     @RequestMapping("/accessing")
     public ResponseEntity<String> accessTokenRecieving(@RequestParam("code") String code) throws IOException {
-        final String port = environment.getProperty("server.port");
-        final String address = environment.getProperty("redirect.address-for-oauth");
-        HttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("https://oauth2.googleapis.com/token");
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("code", code));
-        params.add(new BasicNameValuePair("client_id", environment.getProperty("google.client-id")));
-        params.add(new BasicNameValuePair("client_secret", environment.getProperty("google.secret")));
-        params.add(new BasicNameValuePair("grant_type", "authorization_code"));
-        params.add(new BasicNameValuePair("redirect_uri", "https://" + address + ":" + port + "/google/accessing"));
-        httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+        if(code!=null){
+            final String port = environment.getProperty("server.port");
+            final String address = environment.getProperty("redirect.address-for-oauth");
+            HttpClient client = HttpClients.createDefault();
+            HttpPost httpPost = new HttpPost("https://oauth2.googleapis.com/token");
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("code", code));
+            params.add(new BasicNameValuePair("client_id", environment.getProperty("google.client-id")));
+            params.add(new BasicNameValuePair("client_secret", environment.getProperty("google.secret")));
+            params.add(new BasicNameValuePair("grant_type", "authorization_code"));
+            params.add(new BasicNameValuePair("redirect_uri", "https://" + address + ":" + port + "/google/accessing"));
+            httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
-        HttpResponse response = client.execute(httpPost);
-        HttpEntity responseEntity = response.getEntity();
+            HttpResponse response = client.execute(httpPost);
+            HttpEntity responseEntity = response.getEntity();
 
-        if (responseEntity != null) {
-            try (InputStream instream = responseEntity.getContent()) {
-                final String access_token = httpResponseReader(instream, "access_token").get("access_token");
-                HttpGet httpGet = new HttpGet("https://www.googleapis.com/oauth2/v1/userinfo" +
-                        "?alt=json" +
-                        "&access_token=" + access_token);
-                response = client.execute(httpGet);
-                responseEntity = response.getEntity();
-                if (responseEntity != null) {
-                    try (InputStream instream2 = responseEntity.getContent()) {
-                        final Map<String, String> attributes = httpResponseReader(instream2, "email", "family_name", "given_name");
-                        return registrateGoogleUser(attributes.get("family_name"),
-                                attributes.get("given_name"),
-                                attributes.get("email"));
+            if (responseEntity != null) {
+                try (InputStream instream = responseEntity.getContent()) {
+                    final String access_token = httpResponseReader(instream, "access_token").get("access_token");
+                    HttpGet httpGet = new HttpGet("https://www.googleapis.com/oauth2/v1/userinfo" +
+                            "?alt=json" +
+                            "&access_token=" + access_token);
+                    response = client.execute(httpGet);
+                    responseEntity = response.getEntity();
+                    if (responseEntity != null) {
+                        try (InputStream instream2 = responseEntity.getContent()) {
+                            final Map<String, String> attributes = httpResponseReader(instream2, "email", "family_name", "given_name");
+                            return registrateGoogleUser(attributes.get("family_name"),
+                                    attributes.get("given_name"),
+                                    attributes.get("email"));
+                        }
                     }
                 }
             }
         }
-        return responseBad("response", "Response is null");
+        return responseBad("response", "Ответ от серверов google не поступил, либо пользователь отказался давать права");
     }
 
     public ResponseEntity<String> registrateGoogleUser(String lastName, String firstName, String email) {
@@ -89,7 +91,7 @@ public class GoogleAuthController extends AbstractController {
                     lastName.matches("[A-ZА-Я][a-zа-я]{1,99}")) {
                 userService.saveUserGoogle(username, email, lastName, firstName);
             } else
-                return responseBad("response", "Last name or First name is invalid");
+                return responseBad("response", "Фамилия или Имя невалидны");
         }
         return loginGoogleUser(username);
     }
@@ -100,6 +102,6 @@ public class GoogleAuthController extends AbstractController {
             String token = jwtProvider.generateToken(username);
             return responseSuccess("response", token);
         } else
-            return responseBad("response", "User not found");
+            return responseBad("response", "Пользователь не найден с таким никнеймом, возможно вы изменили никнейм на стороне google");
     }
 }

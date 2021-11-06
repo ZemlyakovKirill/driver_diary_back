@@ -25,16 +25,16 @@ public class StandardLoginTests {
     @Test
     public void wrongUserData() throws Exception {
         this.mockMvc.perform(get("https://localhost:8080/auth/login")
-                        .param("username","alyosha")
-                        .param("password","1324"))
+                        .param("username", "alyosha")
+                        .param("password", "1324"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void rightUserData() throws Exception {
         this.mockMvc.perform(get("https://localhost:8080/auth/login")
-                        .param("username","ivanov")
-                        .param("password","12345"))
+                        .param("username", "ivanov")
+                        .param("password", "12345"))
                 .andExpect(status().is2xxSuccessful());
     }
 }

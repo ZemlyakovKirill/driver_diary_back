@@ -20,27 +20,27 @@ public class News {
     private Long news_id;
 
     @Column(name = "title", nullable = false, length = 500)
-    @NotNull(message = "Title has to be not null")
-    @Size(max = 500, message = "Title has to be less than 500")
+    @NotNull(message = "Титул не может быть нулевым")
+    @Size(max = 500, message = "Титул должен быть меньше или равен 500 символам")
     private String title;
 
     @Column(name = "description", nullable = false, length = 1000)
-    @NotNull(message = "Description has to be not null")
-    @Size(max = 1500, message = "Description has to be less than 1500")
+    @NotNull(message = "Описание не может быть нулевым")
+    @Size(max = 1500, message = "Описание должно быть меньше или равно 1500 символам")
     private String description;
 
     @Column(name = "img_link", length = 200)
-    @Size(max = 200, message = "Image link has to be less than 200")
+    @Size(max = 200, message = "Ссылка на картинку должно быть меньше или равно 200 символов")
     private String imgLink;
 
     @Column(name = "author", length = 100)
-    @Size(max = 100, message = "Author has to be less than 100")
+    @Size(max = 100, message = "Автор должен быть меньше или равен 500 символам")
     private String author;
 
     @Column(name = "pub_date", nullable = false)
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     @Check(constraints = "pub_date >= CURRENT_DATE")
-    @NotNull(message = "Publication Date has to be not null")
+    @NotNull(message = "Дата публикации не может быть нулевой")
     private Date pubDate;
 
     public News() {

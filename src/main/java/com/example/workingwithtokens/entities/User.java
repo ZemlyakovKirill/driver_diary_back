@@ -23,54 +23,54 @@ public class User {
 
     @Expose
     @Column(unique = true, name = "username", length = 50, nullable = false)
-    @Pattern(regexp = "[a-z0-9]{3,50}", message = "Username has to be between 3 and 50 and only latin symbols and arabic numerals")
-    @NotNull(message = "Username has to be not null")
+    @Pattern(regexp = "[a-z0-9]{3,50}", message = "Никнейм должен быть длиной от 3 до 50 символов и состоять из латинских символов нижнего регистра и арабских цифр")
+    @NotNull(message = "Никнейм не может быть нулевым")
     private String username;//никнейм
 
     @Column(name = "password", nullable = false)
-    @NotNull(message = "Password has to be not null")
-    @Size(min = 6, max = 255, message = "Password has to be between 5 and 255")
+    @NotNull(message = "Пароль не может быть нулевым")
+    @Size(min = 60, max = 60, message = "Пароль должен быть из семейства Bcrypt")
     private String password;//пароль
 
     @Expose
     @Column(name = "active", nullable = false)
-    @NotNull(message = "Active has to be not null")
+    @NotNull(message = "Поле активен ли пользователь не может быть нулевым")
     private Boolean active;//активный пользователь
 
     @Expose
     @Column(name="is_vk",nullable = false)
-    @NotNull(message = "Is vk has to be not null")
+    @NotNull(message = "Поле из vk ли пользователь не может быть нулевым")
     private Boolean isVk;
 
     @Expose
     @Column(name="is_google",nullable = false)
-    @NotNull(message = "Is google has to be not null")
+    @NotNull(message = "Поле из google ли пользователь не может быть нулевым")
     private Boolean isGoogle;
 
     @Expose
     @Column(name = "email", unique = true, nullable = false)
-    @Pattern(regexp = "[a-z0-9._-]{2,40}+@[a-z0-9]{2,7}+.[a-z0-9]{2,5}", message = "Email has to be like example@exmp.com")
-    @Size(min = 7, max = 100, message = "Email out of size [7,100]")
-    @NotNull(message = "Email has to be not null")
+    @Pattern(regexp = "[a-z0-9._-]{2,40}+@[a-z0-9]{2,7}+.[a-z0-9]{2,5}", message = "E-mail должен быть похож на example@exmp.com")
+    @Size(min = 7, max = 100, message = "Длина e-mail должна быть в диапазоне от 7 до 100 символов")
+    @NotNull(message = "E-mail не может быть нулевым")
     private String email;
 
     @Expose
     @Column(name = "telnum", length = 20)
-    @Size(min = 10, max = 20, message = "Phone number out of size[10,20]")
+    @Pattern(regexp = "[+0-9]{10,20}", message = "Номер телефона должен быть в диапазоне от 10 до 20 символов")
     private String telnum;
 
     @Expose
     @Column(name = "last_name", nullable = false, length = 100)
-    @Size(max = 100, message = "Last Name has to be less than 100 symbols")
-    @Pattern(regexp = "[A-ZА-Я][a-zа-я]{1,}", message = "Last Name has to be like Johnson")
-    @NotNull(message = "Last Name has to be not null")
+    @Size(max = 100, message = "Длина фамилии должна быть меньше или равна 100 символам")
+    @Pattern(regexp = "[A-ZА-Я][a-zа-я0-9]{1,}", message = "Фамилия должна начинаться с заглавной буквы")
+    @NotNull(message = "Фамилия не может быть нулевой")
     private String lastName;
 
     @Expose
     @Column(name = "first_name", nullable = false, length = 100)
-    @Size(max = 100, message = "First Name has to be less than 100 symbols")
-    @Pattern(regexp = "[A-ZА-Я][a-zа-я]{1,}", message = "First Name has to be like John")
-    @NotNull(message = "First Name has to be not null")
+    @Size(max = 100, message = "Длина имени должно быть меньше или равно 100 символам ")
+    @Pattern(regexp = "[A-ZА-Я][a-zа-я]{1,}", message = "Имя должно начинаться с заглавной буквы")
+    @NotNull(message = "Имя не может быть нулевым")
     private String firstName;
 
     @Expose

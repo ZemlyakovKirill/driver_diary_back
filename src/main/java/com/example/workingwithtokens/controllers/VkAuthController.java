@@ -76,7 +76,7 @@ public class VkAuthController extends AbstractController {
             final String user_id = attributes.get("user_id");
             final String email = attributes.get("email").toLowerCase(Locale.ROOT);
             if (email == null) {
-                return responseBad("response", "Email has to be not null");
+                return responseBad("response", "E-mail на вашей странице vk.com не указан");
             }
             HttpPost httpPost = new HttpPost("https://api.vk.com/method/users.get");
             List<NameValuePair> params = new ArrayList<>();
@@ -103,10 +103,6 @@ public class VkAuthController extends AbstractController {
     }
 
     private ResponseEntity<String> registrateUserVk(String username, String last_name, String first_name, String email) {
-        System.out.println(username);
-        System.out.println(last_name);
-        System.out.println(first_name);
-        System.out.println(email);
         if (userService.findByUsernameWithoutGoogle(username) == null) {
             userService.saveUserVk(
                     username,
@@ -124,7 +120,7 @@ public class VkAuthController extends AbstractController {
             String token = jwtProvider.generateToken(username);
             return responseSuccess("response", token);
         } else
-            return responseBad("response", "User not found");
+            return responseBad("response", "Пользователь не найден, возможно вы изменили никнейм на стороне сервиса vk.com");
     }
 
 }

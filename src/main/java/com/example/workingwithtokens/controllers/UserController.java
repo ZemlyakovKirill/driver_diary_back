@@ -65,7 +65,7 @@ public class UserController extends AbstractController {
         for (Vehicle v : user.getVehicles())
             if (v.getId() == id)
                 return responseSuccess("response", v);
-        return responseBad("message", "NOT FOUND");
+        return responseBad("response", "Транспортное средство с таким id не найдено");
     }
 
 
@@ -80,13 +80,13 @@ public class UserController extends AbstractController {
             try {
                 SearchTypeMarks.valueOf(mark.getType());
             } catch (IllegalArgumentException e) {
-                return responseBad("response", "Type has to be like GASSTATION,CARWASH,CARSERVICE");
+                return responseBad("response", "Тип должен быть один из GASSTATION,CARWASH,CARSERVICE");
             }
             mark.setUser(user);
             requestMarkRepository.save(mark);
-            return responseSuccess("response", "Mark Added");
+            return responseSuccess("response", "Метка добавлена");
         } else {
-            return responseSuccess("response", "Mark already exists");
+            return responseSuccess("response", "Метка уже была добавлена");
         }
     }
 
@@ -97,7 +97,7 @@ public class UserController extends AbstractController {
         try {
             SearchTypeMarks.valueOf(type);
         } catch (IllegalArgumentException e) {
-            return responseBad("response", "Type has to be like GASSTATION,CARWASH,CARSERVICE");
+            return responseBad("response", "Тип должен быть один из GASSTATION,CARWASH,CARSERVICE");
         }
         SearchMarks sm = new SearchMarks(type, lat, lon);
         return responseSuccess("response", sm.search());
@@ -123,11 +123,11 @@ public class UserController extends AbstractController {
                     vehicleCostsRepository.save(vehicleCosts);
                     return responseCreated("response", vehicleCosts);
                 } catch (IllegalArgumentException e) {
-                    return responseBad("response", "Type has to be like REFUELING,WASHING,SERVICE,OTHER");
+                    return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
                 }
             }
         }
-        return responseBad("response", "Something goes wrong");
+        return responseBad("response", "Что-то пошло не так");
     }
 
     @RequestMapping("/cost/all")
