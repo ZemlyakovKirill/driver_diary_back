@@ -105,7 +105,13 @@ public class AbstractController {
         if (e instanceof ConstraintViolationException) {
             StringBuilder reasons = new StringBuilder();
             System.out.println(e.getLocalizedMessage());
-            ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.append(cv.getMessage()).append(" ,"));
+            ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.append(cv.getMessage()).append(", "));
+            if(reasons.length()>=2){
+                reasons.delete(
+                        reasons.length()-3,
+                        reasons.length()-1
+                );
+            }
             return responseBad("response", reasons);
         }
         return responseBad("response",e.getMessage());
