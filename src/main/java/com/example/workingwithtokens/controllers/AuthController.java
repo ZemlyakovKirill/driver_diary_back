@@ -32,7 +32,7 @@ public class AuthController extends AbstractController {
                                                @Valid @RequestParam("email") String email,
                                                @RequestParam("fname") @Valid String firstName,
                                                @RequestParam("lname") @Valid String lastName,
-                                               @RequestParam(value = "phone",required = false,defaultValue = "not set") @Valid String phone,
+                                               @RequestParam(value = "phone",required = false) @Valid String phone,
                                                HttpServletResponse response) {
         if (userService.findByUsername(username) == null && userService.findByEmail(email)==null) {
             userService.saveUser(username, password,email,lastName,firstName,phone);

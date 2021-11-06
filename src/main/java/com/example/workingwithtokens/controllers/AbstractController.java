@@ -100,7 +100,7 @@ public class AbstractController {
         return response(HttpStatus.CREATED, response);
     }
 
-    @ExceptionHandler(ValidationException.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<String> validationHandler(Exception e) {
         if (e instanceof ConstraintViolationException) {
             Set<String> reasons = new HashSet<>();
