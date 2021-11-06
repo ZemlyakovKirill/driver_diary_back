@@ -103,9 +103,9 @@ public class AbstractController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> validationHandler(Exception e) {
         if (e instanceof ConstraintViolationException) {
-            Set<String> reasons = new HashSet<>();
+            StringBuilder reasons = new StringBuilder();
             System.out.println(e.getLocalizedMessage());
-            ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.add(cv.getMessage()));
+            ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.append(cv.getMessage()).append(" ,"));
             return responseBad("response", reasons);
         }
         return responseBad("response",e.getMessage());
