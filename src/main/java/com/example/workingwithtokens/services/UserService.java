@@ -52,7 +52,7 @@ public class UserService {
 
         User userEntity=new User(
                 username,
-                UUID.randomUUID().toString(),
+                passwordEncoder().encode(UUID.randomUUID().toString()),
                 true,
                 email,
                 firstName,
@@ -67,7 +67,7 @@ public class UserService {
 
         User userEntity=new User(
                 username,
-                UUID.randomUUID().toString(),
+                passwordEncoder().encode(UUID.randomUUID().toString()),
                 true,
                 email,
                 firstName,
