@@ -1,7 +1,7 @@
 FROM gradle:7.2.0-jdk8 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build
+RUN gradle build -x test
 
 FROM openjdk:8-jre-slim
 
