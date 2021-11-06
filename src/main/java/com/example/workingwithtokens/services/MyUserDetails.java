@@ -19,12 +19,14 @@ public class MyUserDetails implements UserDetails {
     private String login;
     private String password;
     private List<GrantedAuthority> grantedAuthorities;
+    private boolean isActive;
 
     public static MyUserDetails fromUserEntityToUserDetails(User user) {
         MyUserDetails c = new MyUserDetails();
         c.login = user.getUsername();
         c.password = user.getPassword();
         c.grantedAuthorities = getAuthoritiesFromRoles(user.getAuthorities());
+        c.isActive= user.getActive();
         return c;
     }
 
@@ -35,6 +37,34 @@ public class MyUserDetails implements UserDetails {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getAuthority()));
         }
         return grantedAuthorities;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<GrantedAuthority> getGrantedAuthorities() {
+        return grantedAuthorities;
+    }
+
+    public void setGrantedAuthorities(List<GrantedAuthority> grantedAuthorities) {
+        this.grantedAuthorities = grantedAuthorities;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     @Override
