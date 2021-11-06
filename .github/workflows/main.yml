@@ -5,10 +5,10 @@ on:
 
 jobs:
   build:
-    name: Building
+    name: Working with remote server
     runs-on: ubuntu-latest
     steps:
-      - name: Updating data on server
+      - name: Building docker
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
@@ -21,11 +21,8 @@ jobs:
             git pull 
             docker rm -f driver_app
             docker build -t driver_diary_build .
-  run:
-    name: Running
-    runs-on: ubuntu-latest
-    steps:
-      - name: Updating data on server
+
+      - name: Running docker file
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
