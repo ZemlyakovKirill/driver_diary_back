@@ -28,8 +28,8 @@ public class User {
     private String username;//никнейм
 
     @Column(name = "password", nullable = false)
-    @NotNull(message = "Пароль не может быть нулевым")
     @Size(min = 60, max = 60, message = "Пароль должен быть из семейства Bcrypt")
+    @NotNull(message = "Пароль не может быть нулевым")
     private String password;//пароль
 
     @Expose

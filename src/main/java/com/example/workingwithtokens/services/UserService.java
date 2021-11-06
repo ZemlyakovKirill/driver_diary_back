@@ -36,7 +36,7 @@ public class UserService {
 
         User userEntity=new User(
                 username,
-                passwordEncoder().encode(password),
+                password,
                 true,
                 email,
                 phone,

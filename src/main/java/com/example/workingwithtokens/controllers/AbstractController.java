@@ -108,7 +108,7 @@ public class AbstractController {
             ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.append(cv.getMessage()).append(", "));
             if(reasons.length()>=2){
                 reasons.delete(
-                        reasons.length()-3,
+                        reasons.length()-2,
                         reasons.length()-1
                 );
             }

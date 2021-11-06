@@ -14,23 +14,23 @@ import javax.validation.Valid;
 @Validated
 public class AuthController extends AbstractController {
     @PostMapping("/registrate")
-    public ResponseEntity<String> registerUser(@RequestParam("username") String username,
-                                               @RequestParam("password") @Valid String password,
+    public ResponseEntity<String> registerUser(@Valid @RequestParam("username") String username,
+                                               @Valid @RequestParam("password") String password,
                                                @Valid @RequestParam("email") String email,
-                                               @RequestParam("fname") @Valid String firstName,
-                                               @RequestParam("lname") @Valid String lastName,
-                                               @RequestParam(value = "phone", required = false) @Valid String phone) {
+                                               @Valid @RequestParam("fname") String firstName,
+                                               @Valid @RequestParam("lname") String lastName,
+                                               @Valid @RequestParam(value = "phone", required = false) String phone) {
         if (userService.findByUsername(username) == null && userService.findByEmail(email) == null) {
             userService.saveUser(username, password, email, lastName, firstName, phone);
             return responseCreated();
         } else {
-            return responseBad("response", "Пользователь уже сушествует");
+            return responseBad("response", "Пользователь уже существует");
         }
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseEntity<String> auth(@RequestParam("username") String username,
-                                       @RequestParam("password") String password) {
+    public ResponseEntity<String> auth(@Valid @RequestParam("username") String username,
+                                       @Valid @RequestParam("password") String password) {
         if (userService.findByUsernameAndPassword(username, password) != null) {
             String token = jwtProvider.generateToken(username);
             return responseSuccess("token", token);
