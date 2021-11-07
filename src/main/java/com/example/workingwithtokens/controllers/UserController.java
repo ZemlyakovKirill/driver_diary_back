@@ -42,6 +42,11 @@ public class UserController extends AbstractController {
         return responseSuccess("response", user);
     }
 
+    @RequestMapping("/testtoken")
+    public ResponseEntity<String> personal(){
+        return responseSuccess("response","Токен валиден");
+    }
+
     //Работа с транспортными средствами пользователя
     @RequestMapping("/vehicle/add")
     public ResponseEntity<String> newCar(Principal principal,
