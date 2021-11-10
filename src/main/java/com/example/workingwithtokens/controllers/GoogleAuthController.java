@@ -45,7 +45,8 @@ public class GoogleAuthController extends AbstractController {
     }
 
     @RequestMapping("/accessing")
-    public ResponseEntity<String> accessTokenRecieving(@RequestParam("code") String code) throws IOException {
+    public ResponseEntity<String> accessTokenRecieving(@RequestParam(value = "code",required = false) String code,
+                                                       @RequestParam(value = "error",required = false) String error) throws IOException {
         if(code!=null){
             final String port = environment.getProperty("server.port");
             final String address = environment.getProperty("redirect.address-for-oauth");
@@ -80,8 +81,10 @@ public class GoogleAuthController extends AbstractController {
                     }
                 }
             }
+        }else if(error!=null){
+            return responseBad("response","Пользователь отказался давать доступ");
         }
-        return responseBad("response", "Ответ от серверов google не поступил, либо пользователь отказался давать права");
+        return responseBad("response", "Ответ от серверов google не поступил");
     }
 
     public ResponseEntity<String> registrateGoogleUser(String lastName, String firstName, String email) {

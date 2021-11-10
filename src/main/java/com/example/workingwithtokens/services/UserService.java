@@ -2,7 +2,6 @@ package com.example.workingwithtokens.services;
 
 import com.example.workingwithtokens.entities.Authority;
 import com.example.workingwithtokens.entities.User;
-import com.example.workingwithtokens.entities.Vehicle;
 import com.example.workingwithtokens.repositories.AuthorityRepository;
 import com.example.workingwithtokens.repositories.UserRepository;
 import com.example.workingwithtokens.repositories.VehicleRepository;
