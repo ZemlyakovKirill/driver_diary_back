@@ -65,6 +65,7 @@ public class AbstractController {
     }
     public static Map<String,String> httpResponseReader(InputStream inputStream,String ... executingStrings) throws IOException {
         JsonObject jobj=new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+        System.out.println(jobj);
         Map<String,String> response=new HashMap<>();
         for (String executingString : executingStrings) {
             response.putIfAbsent(executingString,

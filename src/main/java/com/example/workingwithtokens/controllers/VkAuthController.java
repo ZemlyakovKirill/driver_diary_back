@@ -70,13 +70,13 @@ public class VkAuthController extends AbstractController {
             );
             HttpResponse response = client.execute(httpGet);
             HttpEntity responseEntity = response.getEntity();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
             Map<String, String> attributes = httpResponseReader(responseEntity.getContent(), "access_token", "user_id", "email");
+            System.out.println(attributes);
             final String access_token = attributes.get("access_token");
             final String user_id = attributes.get("user_id");
-            final String email = attributes.get("email").toLowerCase(Locale.ROOT);
+            final String email = attributes.get("email");
             if (email == null) {
-                return responseBad("response", "E-mail на вашей странице vk.com не указан");
+                return responseBad("response", "E-mail на вашей странице vk.com не указан или отказан в доступе");
             }
             HttpPost httpPost = new HttpPost("https://api.vk.com/method/users.get");
             List<NameValuePair> params = new ArrayList<>();
