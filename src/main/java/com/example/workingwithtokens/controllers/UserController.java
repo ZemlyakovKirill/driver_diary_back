@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 // TODO сделать сортировки(
@@ -68,7 +69,7 @@ public class UserController extends AbstractController {
     public ResponseEntity<String> getCar(@PathVariable("id") Long id, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         for (Vehicle v : user.getVehicles())
-            if (v.getId() == id)
+            if (Objects.equals(v.getId(), id))
                 return responseSuccess("response", v);
         return responseBad("response", "Транспортное средство с таким id не найдено");
     }

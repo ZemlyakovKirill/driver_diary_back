@@ -28,7 +28,7 @@ public class User {
     private String username;//никнейм
 
     @Column(name = "password", nullable = false)
-    @Size(min = 60, max = 60, message = "Пароль должен быть из семейства Bcrypt")
+    @Size(min = 5, max = 100, message = "Пароль должен быть от 5 до 100 символов")
     @NotNull(message = "Пароль не может быть нулевым")
     private String password;//пароль
 

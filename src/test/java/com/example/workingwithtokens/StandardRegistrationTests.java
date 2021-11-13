@@ -52,7 +52,8 @@ public class StandardRegistrationTests {
                         .param("fname", "Иван")
                         .param("phone", "79992654055"))
                 .andDo(System.out::println)
-                .andExpect(status().is(201)).andDo(System.out::println);
+                .andExpect(status().is(201))
+                .andDo(System.out::println);
     }
 
     @Test
