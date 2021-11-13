@@ -32,10 +32,10 @@ public class UserService {
 
     public User saveUser(String username,String password,String email,String lastName,String firstName,String phone) {
         Set<Authority> authorities=new HashSet<>(Collections.singletonList(authorRepository.findAuthoritiesByAuthority("ROLE_USER")));
-
+        String encodedPassword = passwordEncoder().encode(password);
         User userEntity=new User(
                 username,
-                password,
+                encodedPassword,
                 true,
                 email,
                 phone,
