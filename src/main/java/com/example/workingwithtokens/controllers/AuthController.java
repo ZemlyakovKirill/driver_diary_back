@@ -33,7 +33,7 @@ public class AuthController extends AbstractController {
                                        @Valid @RequestParam("password") String password) {
         if (userService.findByUsernameAndPassword(username, password) != null) {
             String token = jwtProvider.generateToken(username);
-            return responseSuccess("token", token);
+            return responseSuccess("response", token);
         }
         return responseBad("response", "Пользователь не существует");
     }
