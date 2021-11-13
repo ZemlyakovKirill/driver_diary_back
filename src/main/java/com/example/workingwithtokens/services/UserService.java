@@ -112,7 +112,8 @@ public class UserService {
 
     public User findByUsernameAndPassword(String username, String password) {
         User userEntity = findByUsernameWithoutGoogleVk(username);
-        if (userEntity != null) {
+        if (userEntity != null
+                && passwordEncoder().matches(password,userEntity.getPassword())) {
             return userEntity;
         }
         return null;
