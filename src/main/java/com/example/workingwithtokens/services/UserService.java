@@ -39,8 +39,8 @@ public class UserService {
                 true,
                 email,
                 phone,
-                firstName,
                 lastName,
+                firstName,
                 false,
                 false,
                 authorities);
