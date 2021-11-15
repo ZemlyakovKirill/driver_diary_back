@@ -54,8 +54,8 @@ public class UserService {
                 passwordEncoder().encode(UUID.randomUUID().toString()),
                 true,
                 email,
-                firstName,
                 lastName,
+                firstName,
                 true,
                 false,
                 authorities);
@@ -69,8 +69,8 @@ public class UserService {
                 passwordEncoder().encode(UUID.randomUUID().toString()),
                 true,
                 email,
-                firstName,
                 lastName,
+                firstName,
                 false,
                 true,
                 authorities);
