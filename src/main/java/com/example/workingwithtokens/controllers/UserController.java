@@ -51,8 +51,16 @@ public class UserController extends AbstractController {
     //Работа с транспортными средствами пользователя
     @RequestMapping("/vehicle/add")
     public ResponseEntity<String> newCar(Principal principal,
-                                         @Valid @RequestBody Vehicle vehicle) {
+                                         @Valid @RequestParam("mark") String mark,
+                                         @Valid @RequestParam("model") String model,
+                                         @Valid @RequestParam(value = "generation",required = false) String generation,
+                                         @Valid @RequestParam("consumptionCity") Float consumptionCity,
+                                         @Valid @RequestParam("consumptionRoute") Float consumptionRoute,
+                                         @Valid @RequestParam("consumptionMixed") Float cpnsumptionMixed,
+                                         @Valid @RequestParam("fuelCapacity") Float fuelCapacity,
+                                         @Valid @RequestParam(value = "licensePlateNumber",required = false) String licensePlateNumber) {
         User user = userService.findByUsername(principal.getName());
+        Vehicle vehicle=new Vehicle(mark,model,generation,consumptionCity,consumptionRoute,cpnsumptionMixed,fuelCapacity,licensePlateNumber);
         userVehicleRepository.save(new UserVehicle(vehicleRepository.save(vehicle), user));
         return responseCreated("status", "Created", "response", vehicle);
     }

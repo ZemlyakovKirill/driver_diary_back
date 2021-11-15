@@ -81,6 +81,17 @@ public class Vehicle implements Comparable<Vehicle> {
         this.fuelCapacity = fuelCapacity;
     }
 
+    public Vehicle(String mark, String model, String generation, Float consumptionCity, Float consumptionRoute, Float consumptionMixed, Float fuelCapacity, String licensePlateNumber) {
+        this.mark = mark;
+        this.model = model;
+        this.generation = generation;
+        this.consumptionCity = consumptionCity;
+        this.consumptionRoute = consumptionRoute;
+        this.consumptionMixed = consumptionMixed;
+        this.fuelCapacity = fuelCapacity;
+        this.licensePlateNumber = licensePlateNumber;
+    }
+
     public Vehicle(String mark, String model, Float consumptionCity, Float consumptionRoute, Float consumptionMixed, Float fuelCapacity, String licensePlateNumber) {
         this.mark = mark;
         this.model = model;
