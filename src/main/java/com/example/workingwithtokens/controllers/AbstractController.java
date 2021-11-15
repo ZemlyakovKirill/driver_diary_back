@@ -1,10 +1,7 @@
 package com.example.workingwithtokens.controllers;
 
 import com.example.workingwithtokens.providers.JwtProvider;
-import com.example.workingwithtokens.repositories.RequestMarkRepository;
-import com.example.workingwithtokens.repositories.UserVehicleRepository;
-import com.example.workingwithtokens.repositories.VehicleCostsRepository;
-import com.example.workingwithtokens.repositories.VehicleRepository;
+import com.example.workingwithtokens.repositories.*;
 import com.example.workingwithtokens.services.UserService;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
@@ -33,6 +30,9 @@ public class AbstractController {
 
     @Autowired
     VehicleRepository vehicleRepository;
+
+    @Autowired
+    UserNewsRepository newsRepository;
 
     @Autowired
     UserVehicleRepository userVehicleRepository;

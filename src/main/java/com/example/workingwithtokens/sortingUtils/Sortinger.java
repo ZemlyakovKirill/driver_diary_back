@@ -1,5 +1,6 @@
 package com.example.workingwithtokens.sortingUtils;
 
+import com.example.workingwithtokens.entities.News;
 import com.example.workingwithtokens.entities.Vehicle;
 import com.example.workingwithtokens.entities.VehicleCosts;
 
@@ -40,7 +41,17 @@ public class Sortinger {
                     return collection.stream().sorted(Comparator.comparing(a -> ((Vehicle) a).getModel())).collect(Collectors.toCollection(LinkedHashSet::new));
                 case "Model>":
                     return collection.stream().sorted(Comparator.comparing(a -> ((Vehicle) a).getModel(),Comparator.reverseOrder())).collect(Collectors.toCollection(LinkedHashSet::new));
-
+            }
+        }else if(object.isAssignableFrom(News.class)){
+            switch (sortBy) {
+                case "Author<":
+                    return collection.stream().sorted(Comparator.comparing(a -> ((News) a).getAuthor())).collect(Collectors.toCollection(LinkedHashSet::new));
+                case "Author>":
+                    return collection.stream().sorted(Comparator.comparing(a -> ((News) a).getAuthor(),Comparator.reverseOrder())).collect(Collectors.toCollection(LinkedHashSet::new));
+                case "Date<":
+                    return collection.stream().sorted(Comparator.comparing(a -> ((News) a).getPubDate())).collect(Collectors.toCollection(LinkedHashSet::new));
+                case "Date>":
+                    return collection.stream().sorted(Comparator.comparing(a -> ((News) a).getPubDate(),Comparator.reverseOrder())).collect(Collectors.toCollection(LinkedHashSet::new));
             }
         }
         return collection;

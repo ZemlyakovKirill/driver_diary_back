@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -155,5 +156,12 @@ public class UserController extends AbstractController {
             }
         }
         return responseSuccess("response", Sortinger.sort(VehicleCosts.class, vehicleCosts, sortBy));
+    }
+
+    @RequestMapping("/news/all")
+    public ResponseEntity<String> allNews(Principal principal,
+                                          @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
+        List<News> newsList = newsRepository.findAll();
+        return responseSuccess("response", Sortinger.sort(News.class, newsList, sortBy));
     }
 }

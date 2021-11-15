@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "news")
-public class News {
+public class News implements Comparable<News> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "news_id")
@@ -139,5 +139,10 @@ public class News {
                 ", author='" + author + '\'' +
                 ", pubDate=" + pubDate +
                 '}';
+    }
+
+    @Override
+    public int compareTo(News o) {
+        return 0;
     }
 }
