@@ -4,6 +4,11 @@ import com.example.workingwithtokens.entities.AcceptedMark;
 import com.example.workingwithtokens.enums.SearchTypeMarks;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
 
 import javax.validation.ConstraintViolationException;
 import javax.xml.bind.ValidationException;
@@ -31,7 +36,7 @@ public class SearchMarks {
     }
 
     public List<AcceptedMark> search() throws ValidationException {
-        Optional<String> json = fetch();
+        Optional<InputStreamReader> json = fetch();
         if (json.isPresent()) {
             JsonObject main = new JsonParser().parse(json.get()).getAsJsonObject();
             List<AcceptedMark> marks = new ArrayList<>();
@@ -49,39 +54,26 @@ public class SearchMarks {
         return new ArrayList<>();
     }
 
-    private Optional<String> fetch() throws ValidationException {
+    private Optional<InputStreamReader> fetch() throws ValidationException {
         String parameters =
                 "?text=" + type +
                         "&ll=" + lat + "," + lon +
                         "&spn=2,2" +
                         "&lang=ru_RU" +
                         "&apikey=74fea2d6-b1de-4347-be2d-d13609fd2292";
-
-        HttpURLConnection connection = null;
         try {
             SearchTypeMarks.valueOf(type);
             URL url = new URL(targetUrl + parameters);
-            System.out.println(targetUrl+parameters);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-            final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            final StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            return Optional.of(content.toString());
+
+            HttpClient httpClient=HttpClients.createDefault();
+            HttpGet httpGet=new HttpGet(targetUrl+parameters);
+            HttpResponse response=httpClient.execute(httpGet);
+            HttpEntity entity= response.getEntity();
+
+            return Optional.of(new InputStreamReader(entity.getContent()));
         } catch (Exception e) {
             e.printStackTrace();
-            Optional.empty();
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }
