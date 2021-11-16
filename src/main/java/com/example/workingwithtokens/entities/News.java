@@ -1,5 +1,6 @@
 package com.example.workingwithtokens.entities;
 
+import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,24 +20,29 @@ public class News implements Comparable<News> {
     @Column(name = "news_id")
     private Long news_id;
 
+    @Expose
     @Column(name = "title", nullable = false, length = 500)
     @NotNull(message = "Титул не может быть нулевым")
     @Size(max = 500, message = "Титул должен быть меньше или равен 500 символам")
     private String title;
 
+    @Expose
     @Column(name = "description", nullable = false, length = 1000)
     @NotNull(message = "Описание не может быть нулевым")
     @Size(max = 1500, message = "Описание должно быть меньше или равно 1500 символам")
     private String description;
 
+    @Expose
     @Column(name = "img_link", length = 200)
     @Size(max = 200, message = "Ссылка на картинку должно быть меньше или равно 200 символов")
     private String imgLink;
 
+    @Expose
     @Column(name = "author", length = 100)
     @Size(max = 100, message = "Автор должен быть меньше или равен 500 символам")
     private String author;
 
+    @Expose
     @Column(name = "pub_date", nullable = false)
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     @Check(constraints = "pub_date >= CURRENT_DATE")

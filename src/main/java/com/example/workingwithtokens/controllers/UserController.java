@@ -24,11 +24,8 @@ import java.util.Set;
 // TODO сделать показ  расхода пользователю исходя из величины последней заправки в литра,
 //  оставшегося кол-ва топлива или киллометража
 
-//TODO сделать поиск меток заправок/серввис-центров/детейлинг-центров
 
 //TODO сделать добавление меток пользователя
-
-//TODO(Протестить безопасность JWT-токена)
 
 //TODO почистить код и ненужные методы/классы
 @RestController
@@ -162,6 +159,6 @@ public class UserController extends AbstractController {
     public ResponseEntity<String> allNews(Principal principal,
                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         List<News> newsList = newsRepository.findAll();
-        return responseSuccess("response", Sortinger.sort(News.class, newsList, sortBy));
+        return responseSuccess("response", Sortinger.sort(News.class,newsList,sortBy));
     }
 }
