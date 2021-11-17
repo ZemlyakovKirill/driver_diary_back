@@ -2,7 +2,7 @@ package com.example.workingwithtokens.configs;
 
 import com.example.workingwithtokens.filters.ExceptionHandlerFilter;
 import com.example.workingwithtokens.filters.JwtFilter;
-import com.example.workingwithtokens.services.MyUserDetailsService;
+import com.example.workingwithtokens.details.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

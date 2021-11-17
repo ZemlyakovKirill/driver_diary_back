@@ -70,7 +70,19 @@ public class UserController extends AbstractController {
         Set<Vehicle> vehicles = byUsername.getVehicles();
         return responseSuccess("response", Sortinger.sort(Vehicle.class, vehicles, sortBy));
     }
-
+    @RequestMapping("/vehicle/edit/{id}")
+    public ResponseEntity<String> editCar(Principal principal,
+                                        @PathVariable("id") Long id,
+                                          @Valid @RequestParam("mark") String mark,
+                                          @Valid @RequestParam("model") String model,
+                                          @Valid @RequestParam(value = "generation",required = false) String generation,
+                                          @Valid @RequestParam("consumptionCity") Float consumptionCity,
+                                          @Valid @RequestParam("consumptionRoute") Float consumptionRoute,
+                                          @Valid @RequestParam("consumptionMixed") Float consumptionMixed,
+                                          @Valid @RequestParam("fuelCapacity") Float fuelCapacity,
+                                          @Valid @RequestParam(value = "licensePlateNumber",required = false) String licensePlateNumber) {
+        throw new UnsupportedOperationException();
+    }
     @RequestMapping("/vehicle/{id}")
     public ResponseEntity<String> getCar(@PathVariable("id") Long id, Principal principal) {
         User user = userService.findByUsername(principal.getName());

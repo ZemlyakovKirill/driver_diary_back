@@ -1,8 +1,8 @@
-package com.example.workingwithtokens.services;
+package com.example.workingwithtokens.details;
 
 import com.example.workingwithtokens.entities.User;
+import com.example.workingwithtokens.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;

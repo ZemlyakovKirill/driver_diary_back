@@ -1,4 +1,4 @@
-package com.example.workingwithtokens.services;
+package com.example.workingwithtokens.details;
 
 import com.example.workingwithtokens.entities.Authority;
 import com.example.workingwithtokens.entities.User;

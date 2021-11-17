@@ -45,7 +45,6 @@ public class NewsParse {
             HttpGet httpGet = new HttpGet("https://newsapi.org/v2/top-headlines" +
                     "?apiKey=491232aa2bf24e649b0d8a0e7224682a" +
                     "&sortBy=popularity" +
-                    "&q=auto" +
                     "&country=ru");
 
             HttpResponse response = client.execute(httpGet);

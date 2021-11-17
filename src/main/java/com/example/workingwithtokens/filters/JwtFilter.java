@@ -1,8 +1,8 @@
 package com.example.workingwithtokens.filters;
 
 import com.example.workingwithtokens.providers.JwtProvider;
-import com.example.workingwithtokens.services.MyUserDetails;
-import com.example.workingwithtokens.services.MyUserDetailsService;
+import com.example.workingwithtokens.details.MyUserDetails;
+import com.example.workingwithtokens.details.MyUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -16,12 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.logging.Logger;
 
 @Component
 @Log
