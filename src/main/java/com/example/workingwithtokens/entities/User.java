@@ -90,12 +90,12 @@ public class User {
     }
 
     @Expose
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private Set<UserNote> notes;
 
 
     @Expose
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private Set<UserVehicle> userVehicles;
 
     public User(String username, String password, Boolean active, String email, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities) {
