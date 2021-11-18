@@ -5,6 +5,7 @@ import com.example.workingwithtokens.enums.CostTypes;
 import com.example.workingwithtokens.enums.SearchTypeMarks;
 import com.example.workingwithtokens.parsers.SearchMarks;
 import com.example.workingwithtokens.sortingUtils.Sortinger;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -150,7 +151,7 @@ public class UserController extends AbstractController {
                                           @RequestParam("vId") Long vehicleID,
                                           @RequestParam("type") String type,
                                           @RequestParam("value") Float value,
-                                          @RequestParam("date") Date date
+                                          @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date
                                           ) {
 
         User user = userService.findByUsername(principal.getName());
@@ -186,7 +187,7 @@ public class UserController extends AbstractController {
                                            @RequestParam("vId") Long vehicleID,
                                            @RequestParam("type") String type,
                                            @RequestParam("value") Float value,
-                                           @RequestParam("date") Date date){
+                                           @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date){
         User user = userService.findByUsername(principal.getName());
         Optional<VehicleCosts> cost = user.getCosts().stream().filter(c -> c.getCostId().equals(id)).findFirst();
         Vehicle vehicle = vehicleRepository.getById(vehicleID);
