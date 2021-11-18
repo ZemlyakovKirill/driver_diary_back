@@ -150,7 +150,7 @@ public class UserController extends AbstractController {
                                           @RequestParam("vId") Long vehicleID,
                                           @RequestParam("type") String type,
                                           @RequestParam("value") Float value,
-                                          @RequestParam(value = "date",required = false) Date date
+                                          @RequestParam("date") Date date
                                           ) {
 
         User user = userService.findByUsername(principal.getName());
@@ -186,7 +186,7 @@ public class UserController extends AbstractController {
                                            @RequestParam("vId") Long vehicleID,
                                            @RequestParam("type") String type,
                                            @RequestParam("value") Float value,
-                                           @RequestParam(value = "date",required = false) Date date){
+                                           @RequestParam("date") Date date){
         User user = userService.findByUsername(principal.getName());
         Optional<VehicleCosts> cost = user.getCosts().stream().filter(c -> c.getCostId().equals(id)).findFirst();
         Vehicle vehicle = vehicleRepository.getById(vehicleID);

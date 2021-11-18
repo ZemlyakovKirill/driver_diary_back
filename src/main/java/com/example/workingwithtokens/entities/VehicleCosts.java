@@ -29,6 +29,7 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
 
     @Expose
     @Column(name = "date", nullable = false)
+    @NotNull(message = "Дата расхода не может быть нулевой")
     private Date date = new Date();
 
     @ManyToOne
