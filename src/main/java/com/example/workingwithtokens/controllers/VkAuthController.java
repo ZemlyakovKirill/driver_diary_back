@@ -94,7 +94,7 @@ public class VkAuthController extends AbstractController {
             final String first_name = responseUserData.get("first_name").getAsString();
             final String screen_name = responseUserData.get("screen_name").getAsString();
 
-            return registrateUserVk(screen_name, last_name, first_name, email);
+            return registrateUserVk(screen_name, last_name, first_name, email.toLowerCase(Locale.ROOT));
 
         }
         return responseBad("error", error,
