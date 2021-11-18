@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -38,12 +37,12 @@ public class User {
     private Boolean active;//активный пользователь
 
     @Expose
-    @Column(name="is_vk",nullable = false)
+    @Column(name = "is_vk", nullable = false)
     @NotNull(message = "Поле из vk ли пользователь не может быть нулевым")
     private Boolean isVk;
 
     @Expose
-    @Column(name="is_google",nullable = false)
+    @Column(name = "is_google", nullable = false)
     @NotNull(message = "Поле из google ли пользователь не может быть нулевым")
     private Boolean isGoogle;
 
@@ -99,25 +98,25 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<UserVehicle> userVehicles;
 
-    public User(String username, String password, Boolean active, String email, String lastName, String firstName,Boolean isVk,Boolean isGoogle, Set<Authority> authorities) {
+    public User(String username, String password, Boolean active, String email, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities) {
         this.username = username;
         this.password = password;
         this.active = active;
         this.email = email;
-        this.isVk=isVk;
-        this.isGoogle=isGoogle;
+        this.isVk = isVk;
+        this.isGoogle = isGoogle;
         this.lastName = lastName;
         this.firstName = firstName;
         this.authorities = authorities;
     }
 
-    public User(String username, String password, Boolean active, String email, String telnum, String lastName, String firstName,Boolean isVk,Boolean isGoogle, Set<Authority> authorities) {
+    public User(String username, String password, Boolean active, String email, String telnum, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities) {
         this.username = username;
         this.password = password;
         this.active = active;
         this.email = email;
-        this.isVk=isVk;
-        this.isGoogle=isGoogle;
+        this.isVk = isVk;
+        this.isGoogle = isGoogle;
         this.telnum = telnum;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -126,18 +125,18 @@ public class User {
 
     public Set<Vehicle> getVehicles() {
         Set<Vehicle> vehicles = new HashSet<>();
-        userVehicles.stream().forEach(cv->vehicles.add(cv.getVehicle()));
+        userVehicles.stream().forEach(cv -> vehicles.add(cv.getVehicle()));
         return vehicles;
     }
 
-    public User(Long id, String username, String password, Boolean active, String email, String telnum, String lastName, String firstName,Boolean isVk,Boolean isGoogle, Set<Authority> authorities, Set<UserVehicle> userVehicles) {
+    public User(Long id, String username, String password, Boolean active, String email, String telnum, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities, Set<UserVehicle> userVehicles) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.active = active;
         this.email = email;
-        this.isVk=isVk;
-        this.isGoogle=isGoogle;
+        this.isVk = isVk;
+        this.isGoogle = isGoogle;
         this.telnum = telnum;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -146,6 +145,12 @@ public class User {
     }
 
     public User() {
+    }
+
+    public Set<VehicleCosts> getCosts() {
+        Set<VehicleCosts> vehicleCosts = new HashSet<>();
+        userVehicles.forEach(uv -> vehicleCosts.addAll(uv.getVehicleCosts()));
+        return vehicleCosts;
     }
 
     public Long getId() {

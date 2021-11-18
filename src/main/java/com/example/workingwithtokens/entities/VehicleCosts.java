@@ -47,6 +47,13 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
         this.userVehicle = userVehicle;
     }
 
+    public VehicleCosts( String type, Float value, Date date, UserVehicle userVehicle) {
+        this.type = type;
+        this.value = value;
+        this.date = date;
+        this.userVehicle = userVehicle;
+    }
+
     public Long getCostId() {
         return costId;
     }

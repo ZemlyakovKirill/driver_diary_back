@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // TODO сделать сортировки(
 //  для расходов - по типу, по дате, по автомобилю
@@ -81,7 +79,14 @@ public class UserController extends AbstractController {
                                           @Valid @RequestParam("consumptionMixed") Float consumptionMixed,
                                           @Valid @RequestParam("fuelCapacity") Float fuelCapacity,
                                           @Valid @RequestParam(value = "licensePlateNumber",required = false) String licensePlateNumber) {
-        throw new UnsupportedOperationException();
+        User user = userService.findByUsername(principal.getName());
+        Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
+        if(vehicle.isPresent()){
+            vehicleRepository.save(new Vehicle(id,mark,model,generation,consumptionCity,consumptionRoute,consumptionMixed,fuelCapacity,licensePlateNumber));
+            return responseSuccess("response","Транспортное средство обновлено");
+        }else{
+            return responseBad("response", "Транспортное средство с таким id не найдено");
+        }
     }
     @RequestMapping("/vehicle/{id}")
     public ResponseEntity<String> getCar(@PathVariable("id") Long id, Principal principal) {
@@ -92,6 +97,18 @@ public class UserController extends AbstractController {
         return responseBad("response", "Транспортное средство с таким id не найдено");
     }
 
+    @DeleteMapping("/vehicle/delete/{id}")
+    public ResponseEntity<String> deleteCar(@PathVariable("id") Long id,Principal principal){
+        User user = userService.findByUsername(principal.getName());
+        Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
+        if(vehicle.isPresent()){
+            vehicleRepository.delete(vehicle.get());
+            return responseSuccess("response","Транспортное средство успешно удалено");
+        }
+        else {
+            return responseBad("response", "Транспортное средство с таким id не найдено");
+        }
+    }
 
     //Работа с метками на карте
     @RequestMapping("/mark/set")
@@ -127,46 +144,72 @@ public class UserController extends AbstractController {
         return responseSuccess("response", sm.search());
     }
 
-
+    //Работа с расходами пользователя
     @RequestMapping("/cost/add")
     public ResponseEntity<String> addCost(Principal principal,
-                                          @RequestParam("vId") Long vehicle,
-                                          @RequestBody VehicleCosts vehicleCosts) {
+                                          @RequestParam("vId") Long vehicleID,
+                                          @RequestParam("type") String type,
+                                          @RequestParam("value") Float value,
+                                          @RequestParam(value = "date",required = false) Date date
+                                          ) {
 
         User user = userService.findByUsername(principal.getName());
-        Vehicle vehicle1 = vehicleRepository.getById(vehicle);
-
+        Vehicle vehicle1 = vehicleRepository.getById(vehicleID);
         Set<UserVehicle> userVehicles = user.getUserVehicles();
         for (UserVehicle userVehicle : userVehicles) {
             if (userVehicle.getVehicle().equals(vehicle1)) {
                 try {
-                    Set<VehicleCosts> vehicleCosts1 = userVehicle.getVehicleCosts();
-                    CostTypes.valueOf(vehicleCosts.getType());
-                    vehicleCosts1.add(vehicleCosts);
-                    vehicleCosts.setUserVehicle(userVehicle);
-                    vehicleCostsRepository.save(vehicleCosts);
+                    Set<VehicleCosts> vehicleCosts = userVehicle.getVehicleCosts();
+                    CostTypes.valueOf(type);
+                    VehicleCosts cost=new VehicleCosts(type,value,date,userVehicle);
+                    vehicleCostsRepository.save(cost);
                     return responseCreated("response", vehicleCosts);
                 } catch (IllegalArgumentException e) {
                     return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
                 }
             }
         }
-        return responseBad("response", "Что-то пошло не так");
+        return responseBad("response", "Транспортное средство не найдено");
     }
 
     @RequestMapping("/cost/all")
     public ResponseEntity<String> allCosts(Principal principal,
                                            @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         User user = userService.findByUsername(principal.getName());
-        Set<VehicleCosts> vehicleCosts = new HashSet<>();
-        for (UserVehicle userVehicle : user.getUserVehicles()) {
-            if (userVehicle.getVehicleCosts() != null) {
-                vehicleCosts.addAll(userVehicle.getVehicleCosts());
-            }
-        }
+        Set<VehicleCosts> vehicleCosts = user.getCosts();
         return responseSuccess("response", Sortinger.sort(VehicleCosts.class, vehicleCosts, sortBy));
     }
 
+    @RequestMapping("/cost/edit/{id}")
+    public ResponseEntity<String> editCost(Principal principal,
+                                           @PathVariable("id") Long id,
+                                           @RequestParam("vId") Long vehicleID,
+                                           @RequestParam("type") String type,
+                                           @RequestParam("value") Float value,
+                                           @RequestParam(value = "date",required = false) Date date){
+        User user = userService.findByUsername(principal.getName());
+        Optional<VehicleCosts> cost = user.getCosts().stream().filter(c -> c.getCostId().equals(id)).findFirst();
+        Vehicle vehicle = vehicleRepository.getById(vehicleID);
+        Set<UserVehicle> userVehicles=user.getUserVehicles();
+        if(cost.isPresent()){
+            for (UserVehicle userVehicle : userVehicles) {
+                if (userVehicle.getVehicle().equals(vehicle)) {
+                    try {
+                        Set<VehicleCosts> vehicleCosts = userVehicle.getVehicleCosts();
+                        CostTypes.valueOf(type);
+                        VehicleCosts newCost=new VehicleCosts(id,type,value,date,userVehicle);
+                        vehicleCostsRepository.save(newCost);
+                        return responseCreated("response", vehicleCosts);
+                    } catch (IllegalArgumentException e) {
+                        return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
+                    }
+                }
+            }
+            return responseBad("response", "Транспортное средство не найдено");
+        }else{
+            return responseBad("response","Расход с данным id не найден");
+        }
+    }
     @RequestMapping("/news/all")
     public ResponseEntity<String> allNews(Principal principal,
                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
