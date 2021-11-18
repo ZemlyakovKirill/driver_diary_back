@@ -15,18 +15,18 @@ public class UserVehicle {
     private int id;
 
     @Expose
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "vehicle_id",nullable = false)
     @NotNull(message = "Id транспортного средства не может быть нулевым")
     private Vehicle vehicle;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id",nullable = false)
     @NotNull(message="Id пользователя не может быть нулевым")
     private User user;
 
     @Expose
-    @OneToMany(mappedBy = "userVehicle")
+    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL)
     private Set<VehicleCosts> vehicleCosts;
 
 
