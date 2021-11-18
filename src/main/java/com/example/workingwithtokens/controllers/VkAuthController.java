@@ -103,6 +103,7 @@ public class VkAuthController extends AbstractController {
     }
 
     private ResponseEntity<String> registrateUserVk(String username, String last_name, String first_name, String email) {
+        System.out.println(email);
         if (userService.findByUsernameWithoutGoogle(username) == null) {
             userService.saveUserVk(
                     username,
