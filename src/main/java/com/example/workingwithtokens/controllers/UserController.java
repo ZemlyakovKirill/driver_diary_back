@@ -103,7 +103,7 @@ public class UserController extends AbstractController {
         User user = userService.findByUsername(principal.getName());
         Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
         if(vehicle.isPresent()){
-            vehicleRepository.delete(vehicle.get());
+            vehicleRepository.deleteById(vehicle.get().getId());
             return responseSuccess("response","Транспортное средство успешно удалено");
         }
         else {
@@ -200,7 +200,7 @@ public class UserController extends AbstractController {
                         CostTypes.valueOf(type);
                         VehicleCosts newCost=new VehicleCosts(id,type,value,date,userVehicle);
                         vehicleCostsRepository.save(newCost);
-                        return responseCreated("response", vehicleCosts);
+                        return responseCreated("response", "Расход обновлен");
                     } catch (IllegalArgumentException e) {
                         return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
                     }
@@ -211,6 +211,8 @@ public class UserController extends AbstractController {
             return responseBad("response","Расход с данным id не найден");
         }
     }
+
+
     @RequestMapping("/news/all")
     public ResponseEntity<String> allNews(Principal principal,
                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
