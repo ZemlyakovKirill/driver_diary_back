@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
 import java.security.Principal;
@@ -98,12 +99,13 @@ public class UserController extends AbstractController {
         return responseBad("response", "Транспортное средство с таким id не найдено");
     }
 
+    @Transactional
     @DeleteMapping("/vehicle/delete/{id}")
     public ResponseEntity<String> deleteCar(@PathVariable("id") Long id,Principal principal){
         User user = userService.findByUsername(principal.getName());
         Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
         if(vehicle.isPresent()){
-            vehicleRepository.delete(vehicle.get().getId());
+            vehicleRepository.deleteVehicleById(vehicle.get().getId());
             return responseSuccess("response","Транспортное средство успешно удалено");
         }
         else {

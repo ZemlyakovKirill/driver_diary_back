@@ -3,8 +3,12 @@ package com.example.workingwithtokens.controllers;
 import com.example.workingwithtokens.providers.JwtProvider;
 import com.example.workingwithtokens.repositories.*;
 import com.example.workingwithtokens.services.UserService;
-import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +20,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @ControllerAdvice
 public class AbstractController {
@@ -114,6 +117,8 @@ public class AbstractController {
             }
             return responseBad("response", reasons);
         }
+        Logger logger= LoggerFactory.getLogger(AbstractController.class);
+        logger.info(e.toString());
         return responseBad("response",e.getMessage());
     }
 
