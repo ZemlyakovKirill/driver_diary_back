@@ -103,7 +103,7 @@ public class UserController extends AbstractController {
         User user = userService.findByUsername(principal.getName());
         Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
         if(vehicle.isPresent()){
-            vehicleRepository.deleteById(vehicle.get().getId());
+            vehicleRepository.delete(vehicle.get().getId());
             return responseSuccess("response","Транспортное средство успешно удалено");
         }
         else {
