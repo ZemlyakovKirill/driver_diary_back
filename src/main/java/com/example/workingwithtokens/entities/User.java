@@ -95,7 +95,7 @@ public class User {
 
 
     @Expose
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<UserVehicle> userVehicles;
 
     public User(String username, String password, Boolean active, String email, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities) {

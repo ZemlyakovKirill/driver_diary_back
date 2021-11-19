@@ -26,7 +26,7 @@ public class UserVehicle {
     private User user;
 
     @Expose
-    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<VehicleCosts> vehicleCosts;
 
 
