@@ -118,7 +118,7 @@ public class AbstractController {
             return responseBad("response", reasons);
         }
         Logger logger= LoggerFactory.getLogger(AbstractController.class);
-        logger.info(e.toString());
+        logger.error("Error",e);
         return responseBad("response",e.getMessage());
     }
 

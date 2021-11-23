@@ -2,10 +2,7 @@ package com.example.workingwithtokens.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -36,5 +33,12 @@ public class AuthController extends AbstractController {
             return responseSuccess("response", token);
         }
         return responseBad("response", "Пользователь не существует");
+    }
+
+    @GetMapping("/testdelete")
+    public ResponseEntity<String> testDelete(){
+        vehicleRepository.deleteVehicleById(1L);
+        return responseSuccess("response","");
+
     }
 }

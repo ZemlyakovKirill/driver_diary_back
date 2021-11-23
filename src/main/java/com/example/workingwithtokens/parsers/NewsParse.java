@@ -36,8 +36,8 @@ public class NewsParse {
     private final Gson json = new GsonBuilder().setPrettyPrinting().create();
     public final Logger logger = LoggerFactory.getLogger(NewsParse.class);
 
-    @Async("schedulePool1")
-    @Scheduled(fixedRate = 43_200_000)
+//    @Async("schedulePool1")
+//    @Scheduled(fixedRate = 43_200_000)
     public void updateNews() {
         try {
             logger.info("Parsing news...");

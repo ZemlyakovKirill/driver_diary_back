@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Entity
 @Table(name = "vehicles")
@@ -61,6 +62,9 @@ public class Vehicle implements Comparable<Vehicle> {
     @Column(name = "license_plate_number", length = 20)
     @Size(max = 20, message = "Гос. номер должен быть меньше 20 символов")
     private String licensePlateNumber;
+
+    @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    private Set<UserVehicle> userVehicleSet;
 
     public Vehicle(String mark, String model, Float consumptionCity, Float consumptionRoute, Float consumptionMixed, Float fuelCapacity) {
         this.mark = mark;
