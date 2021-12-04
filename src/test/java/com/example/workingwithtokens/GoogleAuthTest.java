@@ -31,9 +31,9 @@ public class GoogleAuthTest {
         final String clientId = environment.getProperty("google.client-id");
         this.mockMvc.perform(post("https://localhost:8080/google/auth"))
                 .andExpect(redirectedUrl("https://accounts.google.com/o/oauth2/v2/auth" +
-                        "?client_id=" + clientId +
+                        "?client_id=1086042784691-ea85h83k1a4p2c9gmoid47ba3iuntcna.apps.googleusercontent.com" +
+                        "&redirect_uri=https://driver-diary.xyz:8080/google/accessing" +
                         "&response_type=code" +
-                        "&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email" +
-                        "&redirect_uri=https://localhost:8080/google/accessing"));
+                        "&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"));
     }
 }

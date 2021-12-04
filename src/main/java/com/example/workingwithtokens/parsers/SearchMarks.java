@@ -57,14 +57,12 @@ public class SearchMarks {
     private Optional<InputStreamReader> fetch() throws ValidationException {
         String parameters =
                 "?text=" + type +
-                        "&ll=" + lat + "," + lon +
+                        "&ll=" + lon + "," + lat +
                         "&spn=2,2" +
                         "&lang=ru_RU" +
                         "&apikey=74fea2d6-b1de-4347-be2d-d13609fd2292";
         try {
             SearchTypeMarks.valueOf(type);
-            URL url = new URL(targetUrl + parameters);
-
             HttpClient httpClient=HttpClients.createDefault();
             HttpGet httpGet=new HttpGet(targetUrl+parameters);
             HttpResponse response=httpClient.execute(httpGet);

@@ -1,7 +1,6 @@
 package com.example.workingwithtokens;
 
 import com.example.workingwithtokens.controllers.AuthController;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -45,7 +45,7 @@ public class StandardLoginTests {
     }
 
     @Test
-    public void loginViaGet() throws Exception{
+    public void loginViaGet() throws Exception {
         this.mockMvc.perform(get("https://localhost:8080/auth/login"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().json("{\n" +
