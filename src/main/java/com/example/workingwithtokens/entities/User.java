@@ -22,7 +22,7 @@ public class User {
 
     @Expose
     @Column(unique = true, name = "username", length = 50, nullable = false)
-    @Pattern(regexp = "[a-z0-9]{3,50}", message = "Никнейм должен быть длиной от 3 до 50 символов и состоять из латинских символов нижнего регистра и арабских цифр")
+    @Pattern(regexp = "[a-z0-9._]{3,50}", message = "Никнейм должен быть длиной от 3 до 50 символов и состоять из латинских символов нижнего регистра и арабских цифр")
     @NotNull(message = "Никнейм не может быть нулевым")
     private String username;//никнейм
 
@@ -48,14 +48,14 @@ public class User {
 
     @Expose
     @Column(name = "email", unique = true, nullable = false)
-    @Pattern(regexp = "[a-z0-9._-]{2,40}+@[a-z0-9]{2,7}+.[a-z0-9]{2,5}", message = "E-mail должен быть похож на example@exmp.com")
+    @Pattern(regexp = "^([a-z_0-9]{2,40})(@)([a-z0-9._-]{2,7})(\\.)([a-z]{2,5})$", message = "E-mail должен быть похож на example@exmp.com")
     @Size(min = 7, max = 100, message = "Длина e-mail должна быть в диапазоне от 7 до 100 символов")
     @NotNull(message = "E-mail не может быть нулевым")
     private String email;
 
     @Expose
     @Column(name = "telnum", length = 20)
-    @Pattern(regexp = "[+0-9]{10,20}", message = "Номер телефона должен быть в диапазоне от 10 до 20 символов")
+    @Pattern(regexp = "^(\\+){0,1}[0-9()-]{10,20}$", message = "Номер телефона должен быть в диапазоне от 10 до 20 символов")
     private String telnum;
 
     @Expose
