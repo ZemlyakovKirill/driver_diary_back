@@ -17,7 +17,7 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
     private Long costId;
 
     @Expose
-    @Column(name = "type", length = 100, nullable = false)
+    @Column(name = "type", length = 20, nullable = false)
     @NotNull(message = "Тип расхода не может быть нулевым")
     private String type;
 

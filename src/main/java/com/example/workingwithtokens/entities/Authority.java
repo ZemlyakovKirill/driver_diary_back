@@ -13,7 +13,7 @@ public class Authority {
     @Column(name = "authority_id")
     private int id;
     @Expose
-    @Column(name = "authority")
+    @Column(name = "authority",unique = true)
     private String authority;
 
     public Authority() {

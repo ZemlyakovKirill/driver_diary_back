@@ -23,8 +23,7 @@ public class UserNote {
     private Long id;
 
     @Expose
-    @Column(name = "description", nullable = false, length = 100)
-    @NotNull(message = "Описание не может быть нулевым")
+    @Column(name = "description", length = 100)
     @Size(max = 100, message = "Длина описания должна быть меньше или равна 100 символам")
     private String description;
 
@@ -51,4 +50,8 @@ public class UserNote {
     @JoinColumn(name="user_id",nullable = false)
     @NotNull(message = "Пользователь не может быть нулевым")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name="ownership_id")
+    private UserVehicle userVehicle;
 }

@@ -12,7 +12,7 @@ public class UserVehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ownership_id")
-    private int id;
+    private long id;
 
     @Expose
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL,targetEntity = Vehicle.class)
@@ -44,7 +44,7 @@ public class UserVehicle {
         this.user = user;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
