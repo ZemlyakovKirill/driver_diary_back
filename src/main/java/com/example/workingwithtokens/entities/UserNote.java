@@ -48,7 +48,7 @@ public class UserNote {
 
     @ManyToOne
     @JoinColumn(name="user_id",nullable = false)
-    @NotNull(message = "Пользователь не может быть нулевым")
+    @NotNull(message = "Идентификатор пользователя не может быть нулевым")
     private User user;
 
     @ManyToOne
