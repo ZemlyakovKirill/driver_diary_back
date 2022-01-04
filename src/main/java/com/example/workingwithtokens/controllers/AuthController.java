@@ -1,15 +1,22 @@
 package com.example.workingwithtokens.controllers;
 
+import com.example.workingwithtokens.services.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/auth", produces = "application/json")
 @Validated
 public class AuthController extends AbstractController {
+
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/registrate")
     public ResponseEntity<String> registerUser(@Valid @RequestParam("username") String username,
                                                @Valid @RequestParam("password") String password,
@@ -40,5 +47,11 @@ public class AuthController extends AbstractController {
         vehicleRepository.deleteVehicleById(1L);
         return responseSuccess("response","");
 
+    }
+
+    @GetMapping("/testsendmail")
+    public ResponseEntity<String> testMail() throws MessagingException {
+        emailService.sendMessage("themlyakov@mail.ru","Восстановление доступа к аккаунту","lgnkdfgdf8gydflkgdlfg");
+        return responseSuccess("response","Отправлено");
     }
 }

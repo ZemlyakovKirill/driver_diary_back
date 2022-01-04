@@ -1,10 +1,13 @@
 package com.example.workingwithtokens.configs;
 
+import com.example.workingwithtokens.details.MyUserDetailsService;
 import com.example.workingwithtokens.filters.ExceptionHandlerFilter;
 import com.example.workingwithtokens.filters.JwtFilter;
-import com.example.workingwithtokens.details.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Properties;
+
 @EnableWebSecurity
 public class APISecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
@@ -24,6 +29,9 @@ public class APISecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     @Autowired
     private JwtFilter jwtFilter;
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     MyUserDetailsService userDetailsService;
@@ -55,6 +63,28 @@ public class APISecurityConfig extends WebSecurityConfigurerAdapter implements W
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JavaMailSender getJavaMailSender() {
+        String addressFrom = environment.getProperty("spring.mail.username");
+        String passwordFrom = environment.getProperty("spring.mail.password");
+
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.mail.ru");
+        mailSender.setPort(465);
+
+        mailSender.setUsername(addressFrom);
+        mailSender.setPassword(passwordFrom);
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.required", "true");
+        props.put("mail.smtp.socketFactory.class",
+                "javax.net.ssl.SSLSocketFactory");
+        return mailSender;
     }
 
 }

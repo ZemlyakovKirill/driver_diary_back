@@ -32,5 +32,5 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.5'
-
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.6.1'
 }
