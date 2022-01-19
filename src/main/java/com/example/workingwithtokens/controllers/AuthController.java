@@ -42,16 +42,9 @@ public class AuthController extends AbstractController {
         return responseBad("response", "Пользователь не существует");
     }
 
-    @GetMapping("/testdelete")
-    public ResponseEntity<String> testDelete(){
-        vehicleRepository.deleteVehicleById(1L);
-        return responseSuccess("response","");
+    @GetMapping(value = "/sendmailtest",produces = "application/json")
+    public ResponseEntity<String> mailSend(){
 
-    }
-
-    @GetMapping("/testsendmail")
-    public ResponseEntity<String> testMail() throws MessagingException {
-        emailService.sendMessage("themlyakov@mail.ru","Восстановление доступа к аккаунту","lgnkdfgdf8gydflkgdlfg");
-        return responseSuccess("response","Отправлено");
+        throw new UnsupportedOperationException();
     }
 }
