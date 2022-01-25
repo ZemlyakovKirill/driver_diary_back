@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,11 +25,15 @@ import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
 public class AbstractController {
+    @Autowired
+    private SimpMessageSendingOperations operations;
+
     @Autowired
     RequestMarkRepository requestMarkRepository;
 
@@ -54,7 +60,6 @@ public class AbstractController {
     protected JwtProvider jwtProvider;
 
     protected static final Gson json = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-
 
     public static ResponseEntity<String> response(HttpStatus status, Object... response) {
         Map<String, Object> responseMap = new HashMap<>();
@@ -91,9 +96,6 @@ public class AbstractController {
         return response(HttpStatus.OK, response);
     }
 
-    public static ResponseEntity<String> responseForbidden(Object... response) {
-        return response(HttpStatus.FORBIDDEN, response);
-    }
 
     public static ResponseEntity<String> responseBad(Object... response) {
         return response(HttpStatus.BAD_REQUEST, response);

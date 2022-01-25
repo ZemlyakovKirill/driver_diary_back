@@ -3,18 +3,23 @@ package com.example.workingwithtokens.configs;
 import com.example.workingwithtokens.details.MyUserDetails;
 import com.example.workingwithtokens.details.MyUserDetailsService;
 import com.example.workingwithtokens.providers.JwtProvider;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.simp.user.DefaultUserDestinationResolver;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
@@ -22,15 +27,22 @@ import org.springframework.messaging.simp.user.UserDestinationResolver;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.messaging.*;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
+import javax.servlet.http.HttpSession;
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -59,67 +71,102 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private MyUserDetailsService customUserDetailsService;
 
+
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*").withSockJS();
+                .setAllowedOriginPatterns("*");
     }
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic","/user");
         registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/user");
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        WebSocketMessageBrokerConfigurer.super.addArgumentResolvers(argumentResolvers);
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
+            @SneakyThrows
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
                 List<String> tokenList = accessor.getNativeHeader("Authorization");
                 String token = null;
-                if(tokenList == null || tokenList.size() < 1) {
+                if (tokenList == null || tokenList.size() < 1) {
                     return message;
                 } else {
                     token = tokenList.get(0);
-                    if(token == null) {
+                    if (token == null) {
                         return message;
                     }
                 }
-                if(tokenList == null || tokenList.size() < 1) {
+                if (tokenList == null || tokenList.size() < 1) {
                     return message;
                 } else {
                     token = tokenList.get(0);
-                    if(token == null) {
+                    if (token == null) {
                         return message;
                     }
                 }
-                System.out.println(tokenList);
-                    if (token != null && jwtProvider.validateToken(token)) {
-                        System.out.println(token);
-                        String userLogin = jwtProvider.getLoginFromToken(token);
-                        MyUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userLogin);
-                        if (customUserDetails != null) {
-                            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-                            if (customUserDetails.isActive()) {
-                                if (accessor.getMessageType() == SimpMessageType.CONNECT) {
-                                    userRegistry.onApplicationEvent(new SessionConnectedEvent(this, (Message<byte[]>) message, auth));
-                                } else if (accessor.getMessageType() == SimpMessageType.SUBSCRIBE) {
-                                    userRegistry.onApplicationEvent(new SessionSubscribeEvent(this, (Message<byte[]>) message, auth));
-                                } else if (accessor.getMessageType() == SimpMessageType.UNSUBSCRIBE) {
-                                    userRegistry.onApplicationEvent(new SessionUnsubscribeEvent(this, (Message<byte[]>) message, auth));
-                                } else if (accessor.getMessageType() == SimpMessageType.DISCONNECT) {
-                                    userRegistry.onApplicationEvent(new SessionDisconnectEvent(this, (Message<byte[]>) message, accessor.getSessionId(), CloseStatus.NORMAL));
-                                }
-                                accessor.setUser(auth);
-                                accessor.setLeaveMutable(true);
-                                return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
+                if (token != null && jwtProvider.validateToken(token)) {
+                    String userLogin = jwtProvider.getLoginFromToken(token);
+                    MyUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userLogin);
+                    if (customUserDetails != null) {
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+                        if (customUserDetails.isActive()) {
+                            if (accessor.getMessageType() == SimpMessageType.CONNECT) {
+                                userRegistry.onApplicationEvent(new SessionConnectedEvent(this, (Message<byte[]>) message, auth));
+                            } else if (accessor.getMessageType() == SimpMessageType.SUBSCRIBE) {
+                                boolean hasPermission=userHasPermissionToSubscribeThisDestination(accessor,auth.getName());
+                                userRegistry.onApplicationEvent(new SessionSubscribeEvent(this, (Message<byte[]>) message, auth));
+
+                                if(!hasPermission)
+                                    return unsubscribeMessage(accessor,auth);
+                            } else if (accessor.getMessageType() == SimpMessageType.UNSUBSCRIBE) {
+                                userRegistry.onApplicationEvent(new SessionUnsubscribeEvent(this, (Message<byte[]>) message, auth));
+                            } else if (accessor.getMessageType() == SimpMessageType.DISCONNECT) {
+                                userRegistry.onApplicationEvent(new SessionDisconnectEvent(this, (Message<byte[]>) message, accessor.getSessionId(), CloseStatus.NORMAL));
                             }
+                            accessor.setUser(auth);
+                            accessor.setLeaveMutable(true);
+                            return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
                         }
                     }
+                }
                 return message;
             }
         });
+    }
+    private boolean userHasPermissionToSubscribeThisDestination(StompHeaderAccessor accessor,String username){
+        String destination=accessor.getDestination();
+        if(destination!=null){
+            if ((
+                    destination.contains("user")||
+                    destination.contains("admin")||
+                    destination.contains("editor")
+                    )&&!destination.contains("topic"))
+                return destination.contains(username);
+        }
+        return true;
+    }
+
+
+
+    private Message<?> unsubscribeMessage(StompHeaderAccessor accessor, Authentication authentication) {
+        SimpMessageHeaderAccessor accessorSimp = SimpMessageHeaderAccessor.create(SimpMessageType.UNSUBSCRIBE);
+        accessorSimp.setSessionId(accessor.getSessionId());
+        accessorSimp.setSubscriptionId(accessor.getSessionId());
+        accessorSimp.setUser(authentication);
+        accessorSimp.setLeaveMutable(true);
+        return MessageBuilder.createMessage("", accessorSimp.getMessageHeaders());
     }
 }

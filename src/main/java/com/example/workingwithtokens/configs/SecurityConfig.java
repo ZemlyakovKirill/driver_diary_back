@@ -5,7 +5,6 @@ import com.example.workingwithtokens.filters.ExceptionHandlerFilter;
 import com.example.workingwithtokens.filters.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -19,8 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.context.request.RequestContextListener;
-import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -53,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/register", "/auth/login","/ws/**").permitAll()
+                .antMatchers("/auth/register", "/auth/login", "/ws/**").permitAll()
                 .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
@@ -62,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .requiresChannel()
                 .anyRequest()
                 .requiresSecure()
-                ;
+        ;
     }
 
     @Override
@@ -98,9 +95,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 "javax.net.ssl.SSLSocketFactory");
         return mailSender;
     }
-    @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
-    }
-
 }
