@@ -10,9 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
@@ -29,20 +26,12 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.messaging.*;
-import org.springframework.web.socket.server.HandshakeInterceptor;
-import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import javax.servlet.http.HttpSession;
-import java.nio.file.AccessDeniedException;
-import java.security.Principal;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -72,17 +61,17 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     private MyUserDetailsService customUserDetailsService;
 
 
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.setErrorHandler(new MyStompSubProtocolErrorHandler());
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns("*").withSockJS();
     }
 
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic","/user");
+        registry.enableSimpleBroker("/topic", "/user");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
     }
@@ -126,11 +115,10 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                             if (accessor.getMessageType() == SimpMessageType.CONNECT) {
                                 userRegistry.onApplicationEvent(new SessionConnectedEvent(this, (Message<byte[]>) message, auth));
                             } else if (accessor.getMessageType() == SimpMessageType.SUBSCRIBE) {
-                                boolean hasPermission=userHasPermissionToSubscribeThisDestination(accessor,auth.getName());
+                                boolean hasPermission = userHasPermissionToSubscribeThisDestination(accessor, auth.getName());
                                 userRegistry.onApplicationEvent(new SessionSubscribeEvent(this, (Message<byte[]>) message, auth));
-
-                                if(!hasPermission)
-                                    return unsubscribeMessage(accessor,auth);
+                                if (!hasPermission)
+                                    return unsubscribeMessage(accessor, auth);
                             } else if (accessor.getMessageType() == SimpMessageType.UNSUBSCRIBE) {
                                 userRegistry.onApplicationEvent(new SessionUnsubscribeEvent(this, (Message<byte[]>) message, auth));
                             } else if (accessor.getMessageType() == SimpMessageType.DISCONNECT) {
@@ -146,19 +134,19 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
-    private boolean userHasPermissionToSubscribeThisDestination(StompHeaderAccessor accessor,String username){
-        String destination=accessor.getDestination();
-        if(destination!=null){
+
+    private boolean userHasPermissionToSubscribeThisDestination(StompHeaderAccessor accessor, String username) {
+        String destination = accessor.getDestination();
+        if (destination != null) {
             if ((
-                    destination.contains("user")||
-                    destination.contains("admin")||
-                    destination.contains("editor")
-                    )&&!destination.contains("topic"))
+                    destination.contains("user") ||
+                            destination.contains("admin") ||
+                            destination.contains("editor")
+            ) && !destination.contains("topic"))
                 return destination.contains(username);
         }
         return true;
     }
-
 
 
     private Message<?> unsubscribeMessage(StompHeaderAccessor accessor, Authentication authentication) {
@@ -169,4 +157,6 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
         accessorSimp.setLeaveMutable(true);
         return MessageBuilder.createMessage("", accessorSimp.getMessageHeaders());
     }
+
+
 }

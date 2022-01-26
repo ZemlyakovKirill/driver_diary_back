@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,14 +26,13 @@ import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
 public class AbstractController {
     @Autowired
-    private SimpMessageSendingOperations operations;
+    private SimpMessagingTemplate template;
 
     @Autowired
     RequestMarkRepository requestMarkRepository;
@@ -60,6 +60,23 @@ public class AbstractController {
     protected JwtProvider jwtProvider;
 
     protected static final Gson json = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+
+    protected void convertAndSendJSON(String destination,Object payload){
+        Map<String, Object> responseMap = new HashMap<>();
+        Map<String,Object> headers=new HashMap<>();
+        headers.put("status",200);
+        responseMap.put("response",payload);
+        template.convertAndSend(destination,json.toJson(responseMap),headers);
+    }
+
+    protected void convertAndSendToUserJSON(String username,String destination,Object payload){
+        Map<String, Object> responseMap = new HashMap<>();
+        Map<String,Object> headers=new HashMap<>();
+        headers.put("status",200);
+        responseMap.put("response",payload);
+        template.convertAndSendToUser(username,destination,json.toJson(responseMap),headers);
+    }
 
     public static ResponseEntity<String> response(HttpStatus status, Object... response) {
         Map<String, Object> responseMap = new HashMap<>();

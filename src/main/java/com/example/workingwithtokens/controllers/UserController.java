@@ -35,9 +35,6 @@ import java.util.stream.Collectors;
 public class UserController extends AbstractController {
 
 
-    @Autowired
-    protected SimpMessagingTemplate template;
-
     // Персональная инфрмация пользователя
     @RequestMapping("/personal")
     public ResponseEntity<String> personal(Principal principal) {
@@ -65,7 +62,7 @@ public class UserController extends AbstractController {
         User user = userService.findByUsername(principal.getName());
         Vehicle vehicle=new Vehicle(mark,model,generation,consumptionCity,consumptionRoute,consumptionMixed,fuelCapacity,licensePlateNumber);
         userVehicleRepository.save(new UserVehicle(vehicleRepository.save(vehicle), user));
-        template.convertAndSendToUser(principal.getName(),"/vehicle","vehicle");
+        convertAndSendToUserJSON(principal.getName(),"/vehicle","vehicle");
         return responseCreated("status", "Created", "response", vehicle);
     }
 
@@ -74,7 +71,7 @@ public class UserController extends AbstractController {
                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         User byUsername = userService.findByUsername(principal.getName());
         Set<Vehicle> vehicles = byUsername.getVehicles();
-        template.convertAndSendToUser(principal.getName(),"/vehicle","vehicle");
+        convertAndSendToUserJSON(principal.getName(),"/vehicle","vehicle");
         return responseSuccess("response", Sortinger.sort(Vehicle.class, vehicles, sortBy));
     }
     @RequestMapping("/vehicle/edit/{id}")
@@ -92,7 +89,7 @@ public class UserController extends AbstractController {
         Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
         if(vehicle.isPresent()){
             vehicleRepository.save(new Vehicle(id,mark,model,generation,consumptionCity,consumptionRoute,consumptionMixed,fuelCapacity,licensePlateNumber));
-            template.convertAndSendToUser(principal.getName(),"/vehicle","vehicle");
+            convertAndSendToUserJSON(principal.getName(),"/vehicle","vehicle");
             return responseSuccess("response","Транспортное средство обновлено");
         }else{
             return responseBad("response", "Транспортное средство с таким id не найдено");
@@ -114,7 +111,7 @@ public class UserController extends AbstractController {
         Optional<Vehicle> vehicle = user.getVehicles().stream().filter(e -> e.getId().equals(id)).findFirst();
         if(vehicle.isPresent()){
             vehicleRepository.deleteVehicleById(vehicle.get().getId());
-            template.convertAndSendToUser(principal.getName(),"/vehicle","vehicle");
+            convertAndSendToUserJSON(principal.getName(),"/vehicle","vehicle");
             return responseSuccess("response","Транспортное средство успешно удалено");
         }
         else {
@@ -175,7 +172,7 @@ public class UserController extends AbstractController {
                     CostTypes.valueOf(type);
                     VehicleCosts cost=new VehicleCosts(type,value,date,userVehicle);
                     vehicleCostsRepository.save(cost);
-                    template.convertAndSendToUser(principal.getName(),"/cost","cost");
+                    convertAndSendToUserJSON(principal.getName(),"/cost","cost");
                     return responseCreated("response", vehicleCosts);
                 } catch (IllegalArgumentException e) {
                     return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
@@ -212,7 +209,7 @@ public class UserController extends AbstractController {
                         CostTypes.valueOf(type);
                         VehicleCosts newCost=new VehicleCosts(id,type,value,date,userVehicle);
                         vehicleCostsRepository.save(newCost);
-                        template.convertAndSendToUser(principal.getName(),"/cost","cost");
+                        convertAndSendToUserJSON(principal.getName(),"/cost","cost");
                         return responseCreated("response", "Расход обновлен");
                     } catch (IllegalArgumentException e) {
                         return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");

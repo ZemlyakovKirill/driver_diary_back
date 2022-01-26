@@ -2,11 +2,14 @@ package com.example.workingwithtokens.configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessageType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 
 @Configuration
 public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+    
+
 
     @Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
@@ -14,7 +17,7 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
                 .simpSubscribeDestMatchers("/editor/**").hasRole("EDITOR")
                 .simpSubscribeDestMatchers("/admin/**").hasRole("ADMIN")
                 .simpSubscribeDestMatchers("/topic/**").permitAll()
-                .simpTypeMatchers(SimpMessageType.CONNECT,SimpMessageType.DISCONNECT,SimpMessageType.OTHER).permitAll()
+                .simpTypeMatchers(SimpMessageType.CONNECT, SimpMessageType.DISCONNECT, SimpMessageType.OTHER).permitAll()
                 .anyMessage().authenticated();
     }
 
@@ -22,7 +25,5 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
     protected boolean sameOriginDisabled() {
         return true;
     }
-
-
 
 }

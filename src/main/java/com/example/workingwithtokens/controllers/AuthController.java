@@ -3,6 +3,7 @@ package com.example.workingwithtokens.controllers;
 import com.example.workingwithtokens.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ public class AuthController extends AbstractController {
 
     @Autowired
     private EmailService emailService;
+
 
     @PostMapping("/registrate")
     public ResponseEntity<String> registerUser(@Valid @RequestParam("username") String username,

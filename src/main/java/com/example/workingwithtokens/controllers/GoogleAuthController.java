@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,7 @@ public class GoogleAuthController extends AbstractController {
 
     @Autowired
     private Environment environment;
+
 
     @RequestMapping("/auth")
     public RedirectView auth() {
