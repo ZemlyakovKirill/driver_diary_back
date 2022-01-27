@@ -65,7 +65,12 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setErrorHandler(new MyStompSubProtocolErrorHandler());
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*").withSockJS();
+                .setAllowedOriginPatterns("*")
+                .withSockJS()
+                .setHeartbeatTime(25000)
+                .setDisconnectDelay(5000)
+                .setClientLibraryUrl("/webjars/sockjs-client/1.1.2/sockjs.js")
+                .setSessionCookieNeeded(false);
     }
 
 
@@ -74,11 +79,6 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic", "/user");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
-    }
-
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        WebSocketMessageBrokerConfigurer.super.addArgumentResolvers(argumentResolvers);
     }
 
     @Override
