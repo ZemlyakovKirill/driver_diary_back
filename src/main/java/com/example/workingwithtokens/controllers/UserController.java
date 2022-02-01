@@ -72,7 +72,6 @@ public class UserController extends AbstractController {
                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         User byUsername = userService.findByUsername(principal.getName());
         Set<Vehicle> vehicles = byUsername.getVehicles();
-        convertAndSendToUserJSON(principal.getName(), "/vehicle", "vehicle");
         return responseSuccess("response", Sortinger.sort(Vehicle.class, vehicles, sortBy));
     }
 
@@ -252,6 +251,7 @@ public class UserController extends AbstractController {
         Optional<VehicleCosts> cost = vehicleCosts.stream().filter(vc -> Objects.equals(vc.getCostId(), id)).findFirst();
         if(cost.isPresent()){
             vehicleCostsRepository.delete(cost.get());
+            convertAndSendToUserJSON(principal.getName(), "/cost", "cost");
             return responseSuccess();
         }else{
             return responseBad("response","Расход с таким id не найден");
@@ -321,10 +321,12 @@ public class UserController extends AbstractController {
                 } else {
                     return responseBad("response", "Транспортное средство не найдено");
                 }
+                convertAndSendToUserJSON(principal.getName(), "/note", "note");
                 return responseCreated();
             } else {
                 UserNote note = new UserNote(description, dateFormat.parse(endDate), false, isCompleted, user);
                 userNoteRepository.save(note);
+                convertAndSendToUserJSON(principal.getName(), "/note", "note");
                 return responseCreated();
             }
         }catch (IllegalArgumentException e){
