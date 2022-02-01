@@ -89,4 +89,12 @@ public class UserNote {
     }
 
 
+    public UserNote(Long id, String description, Date endDate, boolean isCost, boolean isCompleted, User user) {
+        this.id=id;
+        this.description = description;
+        this.endDate = endDate;
+        this.isCost = isCost;
+        this.isCompleted = isCompleted;
+        this.user = user;
+    }
 }

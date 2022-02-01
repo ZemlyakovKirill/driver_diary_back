@@ -29,6 +29,9 @@ public class UserService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
+    public User save(User user){
+        return userRepository.save(user);
+    }
 
     public User saveUser(String username,String password,String email,String lastName,String firstName,String phone) {
         Set<Authority> authorities=new HashSet<>(Collections.singletonList(authorRepository.findAuthoritiesByAuthority("ROLE_USER")));

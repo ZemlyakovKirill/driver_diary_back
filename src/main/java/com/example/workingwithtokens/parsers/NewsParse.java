@@ -1,5 +1,6 @@
 package com.example.workingwithtokens.parsers;
 
+import com.example.workingwithtokens.controllers.AbstractController;
 import com.example.workingwithtokens.entities.News;
 import com.example.workingwithtokens.repositories.UserNewsRepository;
 import com.google.gson.Gson;
@@ -15,6 +16,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,16 +30,17 @@ import java.util.List;
 
 @Component
 @Log
-public class NewsParse {
+public class NewsParse extends AbstractController {
 
     @Autowired
     private UserNewsRepository newsRepository;
+
 
     private final Gson json = new GsonBuilder().setPrettyPrinting().create();
     public final Logger logger = LoggerFactory.getLogger(NewsParse.class);
 
     @Async("schedulePool1")
-    @Scheduled(fixedRate = 43_200_000)
+    @Scheduled(fixedRate = 2_000_000)
     public void updateNews() {
         try {
             logger.info("Parsing news...");
@@ -72,7 +75,9 @@ public class NewsParse {
                                 }
                             });
                     newsRepository.deleteAll();
+                    convertAndSendJSON("/topic/news","news");
                     newsRepository.saveAll(news);
+
                     logger.info("Parsing is over, parsed " + news.size() + " rows");
                 }
             }

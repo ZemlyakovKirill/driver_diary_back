@@ -44,6 +44,40 @@ public class UserController extends AbstractController {
         return responseSuccess("response", user);
     }
 
+    @RequestMapping("/personal/edit")
+    public ResponseEntity<String> editUser(Principal principal,
+                                           @Valid @RequestParam(value = "username") String username,
+                                           @Valid @RequestParam(value = "password") String password,
+                                           @Valid @RequestParam("email") String email,
+                                           @Valid @RequestParam("fname") String firstName,
+                                           @Valid @RequestParam("lname") String lastName,
+                                           @Valid @RequestParam(value = "phone", required = false) String phone){
+        User user= userService.findByUsername(principal.getName());
+        if(user.getGoogle()||user.getVk()){
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setTelnum(phone);
+            userService.save(user);
+            convertAndSendToUserJSON(principal.getName(), "/personal", "personal");
+            return responseSuccess("response","Данные пользователя обновлены");
+        }else{
+            if (userService.findByUsername(username) == null && userService.findByEmail(email) == null) {
+                String encodedPassword = passwordEncoder().encode(password);
+                user.setUsername(username);
+                user.setPassword(encodedPassword);
+                user.setEmail(email);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setTelnum(phone);
+                userService.save(user);
+                convertAndSendToUserJSON(principal.getName(), "/personal", "personal");
+                return responseSuccess("Данные пользователя обновлены");
+            } else {
+                return responseBad("response", "Пользователь c такими данными уже существует");
+            }
+        }
+    }
+
     @RequestMapping("/testtoken")
     public ResponseEntity<String> personal() {
         return responseSuccess("response", "Токен валиден");
@@ -307,8 +341,6 @@ public class UserController extends AbstractController {
             if (isCost) {
                 if (vehicleID == null)
                     throw new NullPointerException("Поле идентификатора ТС не может быть пустым");
-                if (description == null)
-                    throw new NullPointerException("Поле описание не может быть пустым");
                 if (costType == null)
                     throw new NullPointerException("Поле тип не может быть пустым");
                 if (value == null)
@@ -322,15 +354,76 @@ public class UserController extends AbstractController {
                     return responseBad("response", "Транспортное средство не найдено");
                 }
                 convertAndSendToUserJSON(principal.getName(), "/note", "note");
-                return responseCreated();
+                return responseSuccess();
             } else {
                 UserNote note = new UserNote(description, dateFormat.parse(endDate), false, isCompleted, user);
                 userNoteRepository.save(note);
+                convertAndSendToUserJSON(principal.getName(), "/note", "note");
+                return responseSuccess();
+            }
+        }catch (IllegalArgumentException e){
+            return responseBad("response","Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
+        }
+    }
+
+    @RequestMapping("/note/edit/{id}")
+    public ResponseEntity<String> editNote(Principal principal,
+                                          @PathVariable("id") Long noteID,
+                                          @RequestParam(value = "vehicle_id",required = false) Long vehicleID,
+                                          @RequestParam(value = "description",required = false) String description,
+                                          @RequestParam(value = "value",required = false) Float value,
+                                          @RequestParam("end_date") String endDate,
+                                          @RequestParam("is_cost") boolean isCost,
+                                          @RequestParam("is_completed") boolean isCompleted,
+                                          @RequestParam(value = "cost_type",required = false) String costType
+    ) throws ParseException {
+        User user= userService.findByUsername(principal.getName());
+        Optional<UserNote> note = user.getNotes().stream().filter(userNote -> userNote.getId().equals(noteID)).findFirst();
+        if(!note.isPresent()){
+          return responseBad("response","Заметка с таким id не найдена");
+        }
+        try{
+            if (isCost) {
+                if (vehicleID == null)
+                    throw new NullPointerException("Поле идентификатора ТС не может быть пустым");
+                if (costType == null)
+                    throw new NullPointerException("Поле тип не может быть пустым");
+                if (value == null)
+                    throw new NullPointerException("Поле велечины расхода не может быть пустым");
+                CostTypes.valueOf(costType);
+                Optional<UserVehicle> vehicle = user.getUserVehicles().stream().filter(userVehicle -> userVehicle.getVehicle().getId().equals(vehicleID)).findFirst();
+                if (vehicle.isPresent()) {
+                    UserNote noteEdited = new UserNote(noteID,description, value, dateFormat.parse(endDate), true, isCompleted, costType, user, vehicle.get());
+                    userNoteRepository.save(noteEdited);
+                } else {
+                    return responseBad("response", "Транспортное средство не найдено");
+                }
+                convertAndSendToUserJSON(principal.getName(), "/note", "note");
+                return responseCreated();
+            } else {
+                UserNote noteEdited = new UserNote(noteID,description, dateFormat.parse(endDate), false, isCompleted, user);
+                userNoteRepository.save(noteEdited);
                 convertAndSendToUserJSON(principal.getName(), "/note", "note");
                 return responseCreated();
             }
         }catch (IllegalArgumentException e){
             return responseBad("response","Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
+        }
+    }
+
+    @Transactional
+    @DeleteMapping("/note/delete/{id}")
+    public ResponseEntity<String> deleteNote(Principal principal,
+                                             @PathVariable("id") Long id){
+        User user = userService.findByUsername(principal.getName());
+        Set<UserNote> vehicleCosts = user.getNotes();
+        Optional<UserNote> note = vehicleCosts.stream().filter(userNote -> userNote.getId().equals(id)).findFirst();
+        if(note.isPresent()){
+            userNoteRepository.delete(note.get());
+            convertAndSendToUserJSON(principal.getName(), "/note", "note");
+            return responseSuccess();
+        }else{
+            return responseBad("response","Заметка с таким id не найдена");
         }
     }
 
@@ -346,7 +439,7 @@ public class UserController extends AbstractController {
     public ResponseEntity<String> allCompletedNotes(Principal principal){
         User user=userService.findByUsername(principal.getName());
         Set<UserNote> notes = user.getNotes().stream().filter(
-                userNote -> userNote.isCompleted()).collect(Collectors.toSet());
+                UserNote::isCompleted).collect(Collectors.toSet());
         return responseSuccess("response",notes);
     }
 
