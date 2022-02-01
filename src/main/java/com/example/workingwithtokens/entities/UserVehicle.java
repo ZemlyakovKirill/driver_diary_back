@@ -20,13 +20,13 @@ public class UserVehicle {
     @NotNull(message = "Id транспортного средства не может быть нулевым")
     private Vehicle vehicle;
 
-    @ManyToOne(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch=FetchType.EAGER,cascade ={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name = "user_id",nullable = false)
     @NotNull(message="Id пользователя не может быть нулевым")
     private User user;
 
-    @Expose
-    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL,orphanRemoval = true)
+
+    @OneToMany(mappedBy = "userVehicle")
     private Set<VehicleCosts> vehicleCosts;
 
 

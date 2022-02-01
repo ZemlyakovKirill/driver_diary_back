@@ -50,6 +50,9 @@ public class AbstractController {
     VehicleCostsRepository vehicleCostsRepository;
 
     @Autowired
+    UserNoteRepository userNoteRepository;
+
+    @Autowired
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -126,7 +129,6 @@ public class AbstractController {
     public ResponseEntity<String> validationHandler(Exception e) {
         if (e instanceof ConstraintViolationException) {
             StringBuilder reasons = new StringBuilder();
-            System.out.println(e.getLocalizedMessage());
             ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.append(cv.getMessage()).append(", "));
             if(reasons.length()>=2){
                 reasons.delete(
@@ -136,8 +138,6 @@ public class AbstractController {
             }
             return responseBad("response", reasons);
         }
-        Logger logger= LoggerFactory.getLogger(AbstractController.class);
-        logger.error("Error",e);
         return responseBad("response",e.getMessage());
     }
 

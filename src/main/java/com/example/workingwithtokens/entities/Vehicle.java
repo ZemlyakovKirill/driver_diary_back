@@ -63,7 +63,7 @@ public class Vehicle implements Comparable<Vehicle> {
     @Size(max = 20, message = "Гос. номер должен быть меньше 20 символов")
     private String licensePlateNumber;
 
-    @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<UserVehicle> userVehicleSet;
 
     public Vehicle(String mark, String model, Float consumptionCity, Float consumptionRoute, Float consumptionMixed, Float fuelCapacity) {

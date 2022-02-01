@@ -2,6 +2,8 @@ package com.example.workingwithtokens.entities;
 
 
 import com.google.gson.annotations.Expose;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -90,12 +92,13 @@ public class User {
     }
 
     @Expose
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
     private Set<UserNote> notes;
 
 
     @Expose
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Set<UserVehicle> userVehicles;
 
     public User(String username, String password, Boolean active, String email, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities) {

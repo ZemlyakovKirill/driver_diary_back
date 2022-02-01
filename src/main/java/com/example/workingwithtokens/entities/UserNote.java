@@ -46,6 +46,10 @@ public class UserNote {
     @NotNull(message = "Поле выполнена ли заметка не может быть нулевым")
     private boolean isCompleted;
 
+    @Expose
+    @Column(name="type")
+    private String typeCost;
+
     @ManyToOne
     @JoinColumn(name="user_id",nullable = false)
     @NotNull(message = "Идентификатор пользователя не может быть нулевым")
@@ -54,4 +58,35 @@ public class UserNote {
     @ManyToOne
     @JoinColumn(name="ownership_id")
     private UserVehicle userVehicle;
+
+    public UserNote(String description, Float value, Date endDate, boolean isCost, boolean isCompleted, String typeCost, User user, UserVehicle userVehicle) {
+        this.description = description;
+        this.value = value;
+        this.endDate = endDate;
+        this.isCost = isCost;
+        this.isCompleted = isCompleted;
+        this.typeCost = typeCost;
+        this.user = user;
+        this.userVehicle = userVehicle;
+    }
+
+    public UserNote(String description, Float value, Date endDate, boolean isCost, boolean isCompleted, String typeCost, User user) {
+        this.description = description;
+        this.value = value;
+        this.endDate = endDate;
+        this.isCost = isCost;
+        this.isCompleted = isCompleted;
+        this.typeCost = typeCost;
+        this.user = user;
+    }
+
+    public UserNote(String description, Date endDate, boolean isCost, boolean isCompleted, User user) {
+        this.description = description;
+        this.endDate = endDate;
+        this.isCost = isCost;
+        this.isCompleted = isCompleted;
+        this.user = user;
+    }
+
+
 }

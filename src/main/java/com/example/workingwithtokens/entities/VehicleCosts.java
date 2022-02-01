@@ -32,7 +32,8 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
     @NotNull(message = "Дата расхода не может быть нулевой")
     private Date date = new Date();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Expose
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name = "ownership_id", nullable = false)
     @NotNull(message = "Расход должен принадлежать пользователю")
     private UserVehicle userVehicle;
