@@ -44,6 +44,7 @@ public class UserController extends AbstractController {
         return responseSuccess("response", user);
     }
 
+    @Transactional
     @RequestMapping("/personal/edit")
     public ResponseEntity<String> editUser(Principal principal,
                                            @Valid @RequestParam(value = "username") String username,
