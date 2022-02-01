@@ -34,7 +34,7 @@ public class News implements Comparable<News> {
 
     @Expose
     @Column(name = "img_link", length = 200)
-    @Size(max = 200, message = "Ссылка на картинку должно быть меньше или равно 200 символов")
+    @Size(max = 1000, message = "Ссылка на картинку должно быть меньше или равно 1000 символов")
     private String imgLink;
 
     @Expose

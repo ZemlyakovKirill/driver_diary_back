@@ -62,7 +62,8 @@ public class UserController extends AbstractController {
             convertAndSendToUserJSON(principal.getName(), "/personal", "personal");
             return responseSuccess("response","Данные пользователя обновлены");
         }else{
-            if (userService.findByUsername(username) == null && userService.findByEmail(email) == null) {
+            if (principal.getName().equals(username)||
+                    (userService.findByUsername(username) == null && userService.findByEmail(email) == null)) {
                 String encodedPassword = passwordEncoder().encode(password);
                 user.setUsername(username);
                 user.setPassword(encodedPassword);
