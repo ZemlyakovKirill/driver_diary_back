@@ -26,11 +26,16 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Log
-public class NewsParse extends AbstractController {
+public class NewsParse {
+
+    @Autowired
+    SimpMessagingTemplate template;
 
     @Autowired
     private UserNewsRepository newsRepository;
@@ -40,7 +45,7 @@ public class NewsParse extends AbstractController {
     public final Logger logger = LoggerFactory.getLogger(NewsParse.class);
 
     @Async("schedulePool1")
-    @Scheduled(fixedRate = 20_000)
+    @Scheduled(fixedRate = 1_200_000)
     public void updateNews() {
         try {
             logger.info("Parsing news...");
@@ -72,12 +77,13 @@ public class NewsParse extends AbstractController {
                                     ));
                                 } catch (ParseException ex) {
                                     ex.printStackTrace();
+                                } catch (UnsupportedOperationException ignored){
+
                                 }
                             });
                     newsRepository.deleteAll();
-                    convertAndSendJSON("/topic/news","news");
                     newsRepository.saveAll(news);
-
+                    convertAndSendJSON("/topic/news", "news");
                     logger.info("Parsing is over, parsed " + news.size() + " rows");
                 }
             }
@@ -85,5 +91,12 @@ public class NewsParse extends AbstractController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private void convertAndSendJSON(String destination,Object payload){
+        Map<String, Object> responseMap = new HashMap<>();
+        Map<String,Object> headers=new HashMap<>();
+        headers.put("status",200);
+        responseMap.put("response",payload);
+        template.convertAndSend(destination,json.toJson(responseMap),headers);
     }
 }

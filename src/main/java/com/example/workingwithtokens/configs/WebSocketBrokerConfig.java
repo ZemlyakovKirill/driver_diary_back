@@ -4,6 +4,8 @@ import com.example.workingwithtokens.details.MyUserDetails;
 import com.example.workingwithtokens.details.MyUserDetailsService;
 import com.example.workingwithtokens.providers.JwtProvider;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +38,7 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
+@Log
 public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     private DefaultSimpUserRegistry userRegistry = new DefaultSimpUserRegistry();
     private DefaultUserDestinationResolver resolver = new DefaultUserDestinationResolver(userRegistry);
@@ -143,10 +146,11 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                     destination.contains("editor")
             ) && !destination.contains("topic"))
                 return destination.contains(username);
-            if (destination.contains("session") && !destination.contains("topic"))
-                if(accessor.getSessionId()==null)
+            if (destination.contains("session") && !destination.contains("topic")) {
+                if (accessor.getSessionId() == null)
                     return false;
                 return destination.contains(accessor.getSessionId());
+            }
         }
         return true;
     }
