@@ -40,7 +40,7 @@ public class NewsParse extends AbstractController {
     public final Logger logger = LoggerFactory.getLogger(NewsParse.class);
 
     @Async("schedulePool1")
-    @Scheduled(fixedRate = 2_000_000)
+    @Scheduled(fixedRate = 20_000)
     public void updateNews() {
         try {
             logger.info("Parsing news...");

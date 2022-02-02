@@ -81,6 +81,14 @@ public class AbstractController {
         template.convertAndSendToUser(username,destination,json.toJson(responseMap),headers);
     }
 
+    protected void convertAndSendToSessionJSON(String sessionId,String destinationPrefix,Object payload){
+        Map<String, Object> responseMap = new HashMap<>();
+        Map<String,Object> headers=new HashMap<>();
+        headers.put("status",200);
+        responseMap.put("response",payload);
+        template.convertAndSend("/session/"+sessionId+destinationPrefix,json.toJson(responseMap),headers);
+    }
+
     public static ResponseEntity<String> response(HttpStatus status, Object... response) {
         Map<String, Object> responseMap = new HashMap<>();
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();

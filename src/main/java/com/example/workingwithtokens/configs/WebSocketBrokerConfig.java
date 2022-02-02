@@ -76,7 +76,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/user");
+        registry.enableSimpleBroker("/topic", "/user","/session");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
     }
@@ -106,7 +106,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                         return message;
                     }
                 }
-                if (token != null && jwtProvider.validateToken(token)) {
+                if (jwtProvider.validateToken(token)) {
                     String userLogin = jwtProvider.getLoginFromToken(token);
                     MyUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userLogin);
                     if (customUserDetails != null) {
@@ -138,12 +138,15 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     private boolean userHasPermissionToSubscribeThisDestination(StompHeaderAccessor accessor, String username) {
         String destination = accessor.getDestination();
         if (destination != null) {
-            if ((
-                    destination.contains("user") ||
-                            destination.contains("admin") ||
-                            destination.contains("editor")
+            if ((destination.contains("user") ||
+                    destination.contains("admin") ||
+                    destination.contains("editor")
             ) && !destination.contains("topic"))
                 return destination.contains(username);
+            if (destination.contains("session") && !destination.contains("topic"))
+                if(accessor.getSessionId()==null)
+                    return false;
+                return destination.contains(accessor.getSessionId());
         }
         return true;
     }
