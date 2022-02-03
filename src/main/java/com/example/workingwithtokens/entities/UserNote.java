@@ -55,6 +55,7 @@ public class UserNote {
     @NotNull(message = "Идентификатор пользователя не может быть нулевым")
     private User user;
 
+    @Expose
     @ManyToOne
     @JoinColumn(name="ownership_id")
     private UserVehicle userVehicle;

@@ -203,7 +203,6 @@ public class UserController extends AbstractController {
         User user = userService.findByUsername(principal.getName());
         Vehicle vehicle1 = vehicleRepository.getById(vehicleID);
         Date date1 = dateFormat.parse(date);
-        System.out.println(date1);
         Set<UserVehicle> userVehicles = user.getUserVehicles();
         for (UserVehicle userVehicle : userVehicles) {
             if (userVehicle.getVehicle().equals(vehicle1)) {
@@ -346,7 +345,7 @@ public class UserController extends AbstractController {
                 if (costType == null)
                     throw new NullPointerException("Поле тип не может быть пустым");
                 if (value == null)
-                    throw new NullPointerException("Поле велечины расхода не может быть пустым");
+                    throw new NullPointerException("Поле величины расхода не может быть пустым");
                 CostTypes.valueOf(costType);
                 Optional<UserVehicle> vehicle = user.getUserVehicles().stream().filter(userVehicle -> userVehicle.getVehicle().getId().equals(vehicleID)).findFirst();
                 if (vehicle.isPresent()) {
@@ -449,8 +448,7 @@ public class UserController extends AbstractController {
     public ResponseEntity<String> allOverduedNotes(Principal principal){
         User user=userService.findByUsername(principal.getName());
         Set<UserNote> notes = user.getNotes().stream().filter(
-                userNote -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime())>0).collect(Collectors.toSet());
-        System.out.println(Calendar.getInstance().getTime());
+                (userNote ) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toSet());
         return responseSuccess("response",notes);
     }
 
