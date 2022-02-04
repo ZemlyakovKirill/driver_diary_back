@@ -5,7 +5,6 @@ import com.example.workingwithtokens.details.MyUserDetailsService;
 import com.example.workingwithtokens.providers.JwtProvider;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -34,6 +32,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.messaging.*;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -79,7 +78,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/user","/session");
+        registry.enableSimpleBroker("/topic", "/user", "/session");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
     }
@@ -141,17 +140,14 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     private boolean userHasPermissionToSubscribeThisDestination(StompHeaderAccessor accessor, String username) {
         String destination = accessor.getDestination();
         if (destination != null) {
-            if ((destination.contains("user") ||
-                    destination.contains("admin") ||
-                    destination.contains("editor")
-            ) && !destination.contains("topic"))
-                return destination.contains(username);
-            if (destination.contains("session") && !destination.contains("topic")) {
+            if (destination.matches("^/(editor|user|admin)/"+username+"/.*")) {
+                return true;
+            }
+            if (destination.matches("^/session/.*"))
                 if (accessor.getSessionId() == null)
                     return false;
-                return destination.contains(accessor.getSessionId());
+                return destination.matches("^/session/"+accessor.getSessionId()+"/.*");
             }
-        }
         return true;
     }
 
