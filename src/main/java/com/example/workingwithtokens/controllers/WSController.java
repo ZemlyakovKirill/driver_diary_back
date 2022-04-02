@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 @Slf4j
 @Controller
 public class WSController extends AbstractController {

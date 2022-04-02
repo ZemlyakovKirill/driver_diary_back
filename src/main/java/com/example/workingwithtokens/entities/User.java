@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -28,6 +29,7 @@ public class User {
     @NotNull(message = "Никнейм не может быть нулевым")
     private String username;//никнейм
 
+
     @Column(name = "password", nullable = false)
     @Size(min = 5, max = 100, message = "Пароль должен быть от 5 до 100 символов")
     @NotNull(message = "Пароль не может быть нулевым")
@@ -49,6 +51,7 @@ public class User {
     private Boolean isGoogle;
 
     @Expose
+    @Email
     @Column(name = "email", unique = true, nullable = false)
     @Pattern(regexp = "^([a-z_0-9]{2,40})(@)([a-z0-9._-]{2,7})(\\.)([a-z]{2,5})$", message = "E-mail должен быть похож на example@exmp.com")
     @Size(min = 7, max = 100, message = "Длина e-mail должна быть в диапазоне от 7 до 100 символов")
@@ -83,6 +86,19 @@ public class User {
     @NotNull
     private Set<Authority> authorities;
 
+    @Expose
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
+    private Set<UserNote> notes;
+
+    @Expose
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
+    private Set<UserRequestMark> userRequestMarks;
+
+    @Expose
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    private Set<UserVehicle> userVehicles;
+
     public Set<UserNote> getNotes() {
         return notes;
     }
@@ -91,15 +107,6 @@ public class User {
         this.notes = notes;
     }
 
-    @Expose
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
-    private Set<UserNote> notes;
-
-
-    @Expose
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REFRESH)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private Set<UserVehicle> userVehicles;
 
     public User(String username, String password, Boolean active, String email, String lastName, String firstName, Boolean isVk, Boolean isGoogle, Set<Authority> authorities) {
         this.username = username;
@@ -252,6 +259,14 @@ public class User {
         isGoogle = google;
     }
 
+    public Set<UserRequestMark> getUserRequestMarks() {
+        return userRequestMarks;
+    }
+
+    public void setUserRequestMarks(Set<UserRequestMark> userRequestMarks) {
+        this.userRequestMarks = userRequestMarks;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -267,6 +282,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", authorities=" + authorities +
                 ", notes=" + notes +
+                ", userRequestMarks=" + userRequestMarks +
                 ", userVehicles=" + userVehicles +
                 '}';
     }

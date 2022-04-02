@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class RequestMark {
@@ -37,23 +39,18 @@ public class RequestMark {
     @NotNull(message = "Наименование не может быть нулевым")
     private String name;
 
-    @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "user_id", nullable = false)
-    @NotNull(message = "Id пользователя не может быть нулевым")
-    private User user;
 
-    public RequestMark(String type, Float lat, Float lon, String name, User user) {
-        this.id = id;
+    public RequestMark(String type, Float lat, Float lon, String name) {
         this.type = type;
         this.lat = lat;
         this.lon = lon;
         this.name = name;
-        this.user = user;
     }
 
     public RequestMark() {
 
     }
+
 
     public Long getId() {
         return id;
@@ -95,13 +92,6 @@ public class RequestMark {
         this.lon = lon;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     @Override
     public String toString() {
@@ -111,7 +101,6 @@ public class RequestMark {
                 ", lat=" + lat +
                 ", lon=" + lon +
                 ", name='" + name + '\'' +
-                ", user=" + user +
                 '}';
     }
 }

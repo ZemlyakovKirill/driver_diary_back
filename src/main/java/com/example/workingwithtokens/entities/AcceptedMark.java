@@ -38,7 +38,6 @@ public class AcceptedMark {
     private String name;
 
     public AcceptedMark(String type, Float lat, Float lon, String name) {
-        this.id = id;
         this.type = type;
         this.lat = lat;
         this.lon = lon;

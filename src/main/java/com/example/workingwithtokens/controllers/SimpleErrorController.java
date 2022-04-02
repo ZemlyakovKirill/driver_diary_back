@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 
+@ApiIgnore
 @RestController
 @RequestMapping("/error")
 public class SimpleErrorController extends AbstractController implements ErrorController {

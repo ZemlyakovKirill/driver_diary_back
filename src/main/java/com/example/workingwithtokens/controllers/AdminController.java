@@ -1,9 +1,11 @@
 package com.example.workingwithtokens.controllers;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,12 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/admin",produces = "application/json")
+@Api(tags = "Пути администратора")
+@RequestMapping(produces = "application/json")
 @Validated
 public class AdminController extends AbstractController {
 
 
-    @RequestMapping("/all/users")
+    @GetMapping("/admin/all/users")
     public ResponseEntity<String> getAllUsers(HttpServletResponse servletResponse) {
         return responseSuccess("status", "200", "response", userService.findAll());
     }

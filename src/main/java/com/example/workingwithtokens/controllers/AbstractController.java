@@ -34,23 +34,31 @@ public class AbstractController {
     @Autowired
     private SimpMessagingTemplate template;
 
-    @Autowired
-    RequestMarkRepository requestMarkRepository;
+    public static final Object monitor=new Object();
 
     @Autowired
-    VehicleRepository vehicleRepository;
+    protected UserRequestMarkRepository userRequestMarkRepository;
 
     @Autowired
-    UserNewsRepository newsRepository;
+    protected  RequestMarkRepository requestMarkRepository;
 
     @Autowired
-    UserVehicleRepository userVehicleRepository;
+    protected AcceptedMarkRepository acceptedMarkRepository;
 
     @Autowired
-    VehicleCostsRepository vehicleCostsRepository;
+    protected VehicleRepository vehicleRepository;
 
     @Autowired
-    UserNoteRepository userNoteRepository;
+    protected UserNewsRepository newsRepository;
+
+    @Autowired
+    protected UserVehicleRepository userVehicleRepository;
+
+    @Autowired
+    protected VehicleCostsRepository vehicleCostsRepository;
+
+    @Autowired
+    protected UserNoteRepository userNoteRepository;
 
     @Autowired
     public PasswordEncoder passwordEncoder() {
