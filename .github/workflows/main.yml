@@ -20,6 +20,6 @@ jobs:
             git reset --hard HEAD
             git pull
             cd /home/server
-            docker-compose stop driverdiary
+            docker-compose down
             docker-compose build driverdiary
-            docker-compose start driverdiary
+            docker-compose up -d
