@@ -5,6 +5,4 @@ public enum CostTypes {
     WASHING,
     SERVICE,
     OTHER
-
-
 }

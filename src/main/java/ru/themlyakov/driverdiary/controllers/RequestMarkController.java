@@ -43,7 +43,7 @@ public class RequestMarkController extends AbstractController{
                 }
             }
         } catch (IllegalArgumentException e) {
-            return responseBad("response", "Тип должен быть один из GASSTATION,CARWASH,CARSERVICE");
+            return responseBad("response", "Тип должен быть один из GAS,WASH,SERVICE,METHANE,CHARGE");
         }
     }
 

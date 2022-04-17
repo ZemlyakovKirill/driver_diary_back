@@ -1,5 +1,6 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import ru.themlyakov.driverdiary.entities.AcceptedMark;
 import ru.themlyakov.driverdiary.enums.SearchTypeMarks;
 import ru.themlyakov.driverdiary.parsers.SearchMarks;
 import io.swagger.annotations.Api;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.bind.ValidationException;
+import java.util.List;
 
 @RestController
 @Validated
@@ -20,11 +22,13 @@ public class AcceptedMarkController extends AbstractController{
     @GetMapping("/user/mark/get")
     public ResponseEntity<String> getMarks(@RequestParam("lat") Float lat, @RequestParam("lon") Float lon, @RequestParam("type") String type) throws ValidationException {
         try {
-            SearchTypeMarks.valueOf(type);
+            SearchTypeMarks typeEnum = SearchTypeMarks.valueOf(type);
+            SearchMarks sm = new SearchMarks(typeEnum, lat, lon);
+            List<AcceptedMark> responseMarks = sm.search();
+            responseMarks.addAll(acceptedMarkRepository.getAcceptedMarkByTypeAndLatAndLon(type,lat,lon));
+            return responseSuccess("response", responseMarks);
         } catch (IllegalArgumentException e) {
-            return responseBad("response", "Тип должен быть один из GASSTATION,CARWASH,CARSERVICE");
+            return responseBad("response", "Тип должен быть один из GAS,WASH,SERVICE,METHANE,CHARGE");
         }
-        SearchMarks sm = new SearchMarks(type, lat, lon);
-        return responseSuccess("response", sm.search());
     }
 }
