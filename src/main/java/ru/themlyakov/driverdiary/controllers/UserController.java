@@ -27,7 +27,7 @@ public class UserController extends AbstractController {
     @ApiOperation(value = "Редактирование персональной информации пользователя")
     @Transactional
     @PutMapping("/user/personal/edit")
-    public ResponseEntity<String> editUser(Principal principal, @Valid @RequestParam(value = "username") String username, @Valid @RequestParam(value = "password") String password, @Valid @RequestParam(value = "email") String email, @Valid @RequestParam(value = "fname") String firstName, @Valid @RequestParam(value = "lname") String lastName, @Valid @RequestParam(value = "phone", required = false) String phone) {
+    public ResponseEntity<String> editUser(Principal principal, @Valid @RequestParam(value = "username") String username, @Valid @RequestParam(value = "email") String email, @Valid @RequestParam(value = "fname") String firstName, @Valid @RequestParam(value = "lname") String lastName, @Valid @RequestParam(value = "phone", required = false) String phone) {
         User user = userService.findByUsername(principal.getName());
         if (user.getGoogle() || user.getVk()) {
             user.setFirstName(firstName);
@@ -38,9 +38,7 @@ public class UserController extends AbstractController {
             return responseSuccess("response", "Данные пользователя обновлены");
         } else {
             if (principal.getName().equals(username) || (userService.findByUsername(username) == null && userService.findByEmail(email) == null)) {
-                String encodedPassword = passwordEncoder().encode(password);
                 user.setUsername(username);
-                user.setPassword(encodedPassword);
                 user.setEmail(email);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
