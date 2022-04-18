@@ -1,5 +1,6 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import org.springframework.validation.annotation.Validated;
 import ru.themlyakov.driverdiary.entities.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +14,7 @@ import java.security.Principal;
 @Api(tags = "Пути пользователя")
 @RestController
 @RequestMapping(produces = "application/json")
+@Validated
 public class UserController extends AbstractController {
 
     // Персональная инфрмация пользователя
@@ -45,7 +47,7 @@ public class UserController extends AbstractController {
                 user.setTelnum(phone);
                 userService.save(user);
                 convertAndSendToUserJSON(principal.getName(), "/personal", "personal");
-                return responseSuccess("Данные пользователя обновлены");
+                return responseSuccess("response","Данные пользователя обновлены");
             } else {
                 return responseBad("response", "Пользователь c такими данными уже существует");
             }

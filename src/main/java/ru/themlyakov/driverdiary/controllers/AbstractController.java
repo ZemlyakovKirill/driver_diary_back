@@ -139,6 +139,7 @@ public class AbstractController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> validationHandler(Exception e) {
+        e.printStackTrace();
         if (e instanceof ConstraintViolationException) {
             StringBuilder reasons = new StringBuilder();
             ((ConstraintViolationException) e).getConstraintViolations().forEach(cv -> reasons.append(cv.getMessage()).append(", "));
