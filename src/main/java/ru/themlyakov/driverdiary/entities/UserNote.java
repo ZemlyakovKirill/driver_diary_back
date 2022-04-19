@@ -56,7 +56,7 @@ public class UserNote {
     private User user;
 
     @Expose
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name="ownership_id")
     private UserVehicle userVehicle;
 
