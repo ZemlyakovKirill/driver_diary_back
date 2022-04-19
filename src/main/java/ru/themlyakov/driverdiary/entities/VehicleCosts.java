@@ -35,8 +35,7 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
     private Date date = new Date();
 
     @Expose
-    @ManyToOne(cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH},targetEntity = UserVehicle.class)
     @JoinColumn(name = "ownership_id", nullable = false)
     @NotNull(message = "Расход должен принадлежать пользователю")
     private UserVehicle userVehicle;
