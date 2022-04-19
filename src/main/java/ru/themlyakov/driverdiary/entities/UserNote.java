@@ -48,9 +48,9 @@ public class UserNote {
 
     @Expose
     @Column(name="type")
-    private String typeCost;
+    private String type;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name="user_id",nullable = false)
     @NotNull(message = "Идентификатор пользователя не может быть нулевым")
     private User user;
@@ -66,7 +66,7 @@ public class UserNote {
         this.endDate = endDate;
         this.isCost = isCost;
         this.isCompleted = isCompleted;
-        this.typeCost = typeCost;
+        this.type = typeCost;
         this.user = user;
         this.userVehicle = userVehicle;
     }
@@ -77,7 +77,7 @@ public class UserNote {
         this.endDate = endDate;
         this.isCost = isCost;
         this.isCompleted = isCompleted;
-        this.typeCost = typeCost;
+        this.type = typeCost;
         this.user = user;
     }
 

@@ -15,7 +15,7 @@ public class UserVehicle {
     private long id;
 
     @Expose
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL,targetEntity = Vehicle.class)
+    @ManyToOne(fetch = FetchType.EAGER,cascade ={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH},targetEntity = Vehicle.class)
     @JoinColumn(name = "vehicle_id",nullable = false)
     @NotNull(message = "Id транспортного средства не может быть нулевым")
     private Vehicle vehicle;
@@ -26,7 +26,7 @@ public class UserVehicle {
     private User user;
 
 
-    @OneToMany(mappedBy = "userVehicle")
+    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL)
     private Set<VehicleCosts> vehicleCosts;
 
 
