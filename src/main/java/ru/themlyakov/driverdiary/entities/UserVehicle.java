@@ -26,7 +26,7 @@ public class UserVehicle {
     private User user;
 
 
-    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL)
     private Set<VehicleCosts> vehicleCosts;
 
 
