@@ -38,7 +38,7 @@ public class NoteController extends AbstractController{
                 CostTypes.valueOf(costType);
                 Optional<UserVehicle> vehicle = user.getUserVehicles().stream().filter(userVehicle -> userVehicle.getVehicle().getId().equals(vehicleID)).findFirst();
                 if (vehicle.isPresent()) {
-                    UserNote note = new UserNote(description, value, dateFormat.parse(endDate), isCost, isCompleted, costType, user, vehicle.get());
+                    UserNote note = new UserNote(description, value, dateFormat.parse(endDate), true, isCompleted, costType, user, vehicle.get());
                     userNoteRepository.save(note);
                 } else {
                     return responseBad("response", "Транспортное средство не найдено");
@@ -54,6 +54,36 @@ public class NoteController extends AbstractController{
         } catch (IllegalArgumentException e) {
             return responseBad("response", "Тип должен быть один из REFUELING,WASHING,SERVICE,OTHER");
         }
+    }
+
+    @ApiOperation("Пометка выполнено для заметки")
+    @PostMapping("/user/note/complete/{id}")
+    public ResponseEntity<String> completeNote(Principal principal,@PathVariable("id") Long noteID){
+        User user = userService.findByUsername(principal.getName());
+        Optional<UserNote> note = user.getNotes().stream().filter(userNote -> userNote.getId().equals(noteID)).findFirst();
+        if (!note.isPresent()) {
+            return responseBad("response", "Заметка с таким id не найдена");
+        }
+        UserNote userNote = note.get();
+        userNote.setCompleted(true);
+        userNoteRepository.save(userNote);
+        convertAndSendToUserJSON(principal.getName(), "/note", "note");
+        return responseSuccess("response","Метка обновлена");
+    }
+
+    @ApiOperation("Пометка не выполнено для заметки")
+    @PostMapping("/user/note/complete/{id}")
+    public ResponseEntity<String> uncompleteNote(Principal principal,@PathVariable("id") Long noteID){
+        User user = userService.findByUsername(principal.getName());
+        Optional<UserNote> note = user.getNotes().stream().filter(userNote -> userNote.getId().equals(noteID)).findFirst();
+        if (!note.isPresent()) {
+            return responseBad("response", "Заметка с таким id не найдена");
+        }
+        UserNote userNote = note.get();
+        userNote.setCompleted(false);
+        userNoteRepository.save(userNote);
+        convertAndSendToUserJSON(principal.getName(), "/note", "note");
+        return responseSuccess("response","Метка обновлена");
     }
 
     @ApiOperation(value = "Редактирование временной метки")
