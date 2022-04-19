@@ -72,7 +72,7 @@ public class NoteController extends AbstractController{
     }
 
     @ApiOperation("Пометка не выполнено для заметки")
-    @PostMapping("/user/note/complete/{id}")
+    @PostMapping("/user/note/uncomplete/{id}")
     public ResponseEntity<String> uncompleteNote(Principal principal,@PathVariable("id") Long noteID){
         User user = userService.findByUsername(principal.getName());
         Optional<UserNote> note = user.getNotes().stream().filter(userNote -> userNote.getId().equals(noteID)).findFirst();
