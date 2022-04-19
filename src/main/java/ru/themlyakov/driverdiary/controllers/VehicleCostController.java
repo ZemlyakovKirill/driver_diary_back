@@ -83,7 +83,7 @@ public class VehicleCostController extends AbstractController {
         Set<VehicleCosts> vehicleCosts = user.getCosts();
         Optional<VehicleCosts> cost = vehicleCosts.stream().filter(vc -> Objects.equals(vc.getCostId(), id)).findFirst();
         if (cost.isPresent()) {
-            vehicleCostsRepository.delete(cost.get());
+            vehicleCostsRepository.delete(cost.get().getCostId());
             convertAndSendToUserJSON(principal.getName(), "/cost", "cost");
             return responseSuccess();
         } else {
