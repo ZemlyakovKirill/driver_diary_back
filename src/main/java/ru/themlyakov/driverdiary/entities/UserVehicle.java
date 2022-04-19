@@ -29,6 +29,16 @@ public class UserVehicle {
     @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL)
     private Set<VehicleCosts> vehicleCosts;
 
+    @OneToMany(mappedBy = "userVehicle",cascade = CascadeType.ALL)
+    private Set<UserNote> userNotes;
+
+    public Set<UserNote> getUserNotes() {
+        return userNotes;
+    }
+
+    public void setUserNotes(Set<UserNote> userNotes) {
+        this.userNotes = userNotes;
+    }
 
     public UserVehicle(Vehicle vehicle, User user) {
         this.vehicle = vehicle;

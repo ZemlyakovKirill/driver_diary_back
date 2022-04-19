@@ -40,6 +40,8 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
     @NotNull(message = "Расход должен принадлежать пользователю")
     private UserVehicle userVehicle;
 
+
+
     public VehicleCosts() {
     }
 
