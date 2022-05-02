@@ -1,5 +1,7 @@
 package ru.themlyakov.driverdiary.configs;
 
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.themlyakov.driverdiary.details.MyUserDetails;
 import ru.themlyakov.driverdiary.details.MyUserDetailsService;
 import ru.themlyakov.driverdiary.providers.JwtProvider;
@@ -77,9 +79,15 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/user", "/session");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
+        registry.enableSimpleBroker("/topic", "/user", "/session")
+                .setTaskScheduler(handleHeartbeatScheduler());
+    }
+
+    @Bean
+    public TaskScheduler handleHeartbeatScheduler(){
+        return new ThreadPoolTaskScheduler();
     }
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
