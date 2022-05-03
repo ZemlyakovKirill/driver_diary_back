@@ -86,9 +86,10 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Bean
-    public TaskScheduler handleHeartbeatScheduler(){
+    public TaskScheduler handleHeartbeatScheduler() {
         return new ThreadPoolTaskScheduler();
     }
+
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -96,6 +97,9 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+                if(accessor.getMessageType()==SimpMessageType.HEARTBEAT){
+                    return message;
+                }
                 List<String> tokenList = accessor.getNativeHeader("Authorization");
                 String token = null;
                 if (tokenList == null || tokenList.size() < 1) {
@@ -122,7 +126,8 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                         if (customUserDetails.isActive()) {
                             if (accessor.getMessageType() == SimpMessageType.CONNECT) {
                                 userRegistry.onApplicationEvent(new SessionConnectedEvent(this, (Message<byte[]>) message, auth));
-                            } else if (accessor.getMessageType() == SimpMessageType.SUBSCRIBE) {
+                            }
+                            else if (accessor.getMessageType() == SimpMessageType.SUBSCRIBE) {
                                 boolean hasPermission = userHasPermissionToSubscribeThisDestination(accessor, auth.getName());
                                 userRegistry.onApplicationEvent(new SessionSubscribeEvent(this, (Message<byte[]>) message, auth));
                                 if (!hasPermission)
@@ -146,14 +151,14 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     private boolean userHasPermissionToSubscribeThisDestination(StompHeaderAccessor accessor, String username) {
         String destination = accessor.getDestination();
         if (destination != null) {
-            if (destination.matches("^/(editor|user|admin)/"+username+"/.*")) {
+            if (destination.matches("^/(editor|user|admin)/" + username + "/.*")) {
                 return true;
             }
             if (destination.matches("^/session/.*"))
                 if (accessor.getSessionId() == null)
                     return false;
-                return destination.matches("^/session/"+accessor.getSessionId()+"/.*");
-            }
+            return destination.matches("^/session/" + accessor.getSessionId() + "/.*");
+        }
         return true;
     }
 
