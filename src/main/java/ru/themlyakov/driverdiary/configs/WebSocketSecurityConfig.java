@@ -17,7 +17,7 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
                 .simpSubscribeDestMatchers("/editor/**").hasRole("EDITOR")
                 .simpSubscribeDestMatchers("/admin/**").hasRole("ADMIN")
                 .simpSubscribeDestMatchers("/topic/**","/session/**").permitAll()
-                .simpTypeMatchers(SimpMessageType.CONNECT, SimpMessageType.DISCONNECT, SimpMessageType.OTHER).permitAll()
+                .simpTypeMatchers(SimpMessageType.CONNECT, SimpMessageType.DISCONNECT, SimpMessageType.HEARTBEAT,SimpMessageType.OTHER).permitAll()
                 .anyMessage().authenticated();
     }
 
