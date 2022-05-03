@@ -98,7 +98,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
                 if(accessor.getMessageType()==SimpMessageType.HEARTBEAT){
-                    return message;
+                    return MessageBuilder.createMessage(message.getPayload(),message.getHeaders());
                 }
                 List<String> tokenList = accessor.getNativeHeader("Authorization");
                 String token = null;
@@ -110,13 +110,9 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                         return message;
                     }
                 }
-                if (tokenList == null || tokenList.size() < 1) {
+                token = tokenList.get(0);
+                if (token == null) {
                     return message;
-                } else {
-                    token = tokenList.get(0);
-                    if (token == null) {
-                        return message;
-                    }
                 }
                 if (jwtProvider.validateToken(token)) {
                     String userLogin = jwtProvider.getLoginFromToken(token);
