@@ -3,7 +3,7 @@ package ru.themlyakov.driverdiary.controllers;
 import ru.themlyakov.driverdiary.entities.User;
 import ru.themlyakov.driverdiary.entities.UserVehicle;
 import ru.themlyakov.driverdiary.entities.Vehicle;
-import ru.themlyakov.driverdiary.sortingUtils.Sortinger;
+import ru.themlyakov.driverdiary.utils.PaginationWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -34,10 +35,12 @@ public class VehicleController extends AbstractController{
 
     @ApiOperation(value = "Просмотр всех транспортных средств")
     @GetMapping("/user/vehicle/all")
-    public ResponseEntity<String> allCars(Principal principal, @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
+    public ResponseEntity<String> allCars(Principal principal, @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                                          @RequestParam(value = "page", defaultValue = "1") int page) {
         User byUsername = userService.findByUsername(principal.getName());
         Set<Vehicle> vehicles = byUsername.getVehicles();
-        return responseSuccess("response", Sortinger.sort(Vehicle.class, vehicles, sortBy));
+        PaginationWrapper<Object> wrappedData = new PaginationWrapper<>(Arrays.asList(vehicles.toArray()), page);
+        return responseSuccess("response",wrappedData);
     }
 
     @ApiOperation(value = "Редактирование транспортного средства")

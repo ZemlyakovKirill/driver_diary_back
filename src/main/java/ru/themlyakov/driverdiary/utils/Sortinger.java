@@ -1,4 +1,4 @@
-package ru.themlyakov.driverdiary.sortingUtils;
+package ru.themlyakov.driverdiary.utils;
 
 import ru.themlyakov.driverdiary.entities.News;
 import ru.themlyakov.driverdiary.entities.Vehicle;

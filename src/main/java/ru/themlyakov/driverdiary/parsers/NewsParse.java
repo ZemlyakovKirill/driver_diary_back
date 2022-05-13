@@ -1,5 +1,9 @@
 package ru.themlyakov.driverdiary.parsers;
 
+import com.kwabenaberko.newsapilib.NewsApiClient;
+import com.kwabenaberko.newsapilib.models.Article;
+import com.kwabenaberko.newsapilib.models.request.TopHeadlinesRequest;
+import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
 import ru.themlyakov.driverdiary.entities.News;
 import ru.themlyakov.driverdiary.repositories.UserNewsRepository;
 import com.google.gson.Gson;
@@ -28,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Log
@@ -42,54 +48,50 @@ public class NewsParse {
 
     private final Gson json = new GsonBuilder().setPrettyPrinting().create();
     public final Logger logger = LoggerFactory.getLogger(NewsParse.class);
+    private static final NewsApiClient newsApiClient=new NewsApiClient("491232aa2bf24e649b0d8a0e7224682a");
+    private static final SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd'T'h:m:s'Z'");
 
     @Async("schedulePool1")
     @Scheduled(fixedRate = 1_200_000)
     public void updateNews() {
-        try {
             logger.info("Parsing news...");
-            HttpClient client = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet("https://newsapi.org/v2/top-headlines" +
-                    "?apiKey=491232aa2bf24e649b0d8a0e7224682a" +
-                    "&sortBy=popularity" +
-                    "&country=ru");
-
-            HttpResponse response = client.execute(httpGet);
-            HttpEntity httpEntity = response.getEntity();
-
-            if (httpEntity != null) {
-                try (InputStream instream = httpEntity.getContent()) {
-                    JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(instream)).getAsJsonObject();
-                    List<News> news = new ArrayList<>();
-                    jsonObject
-                            .get("articles")
-                            .getAsJsonArray()
-                            .forEach(e -> {
+            newsApiClient.getTopHeadlines(
+                    new TopHeadlinesRequest.Builder()
+                            .q("vehicle")
+                            .language("ru")
+                            .build(),
+                    new NewsApiClient.ArticlesResponseCallback() {
+                        @Override
+                        public void onSuccess(ArticleResponse articleResponse) {
+                            List<News> newsList = new ArrayList<>();
+                            for (Article a: articleResponse.getArticles()) {
                                 try {
-                                    news.add(new News(
-                                            e.getAsJsonObject().get("title").getAsString(),
-                                            e.getAsJsonObject().get("description").getAsString(),
-                                            e.getAsJsonObject().get("urlToImage").getAsString(),
-                                            e.getAsJsonObject().get("source").getAsJsonObject().get("name").getAsString(),
-                                            new SimpleDateFormat("yyyy-mm-dd'T'h:m:s'Z'")
-                                                    .parse(e.getAsJsonObject().get("publishedAt").getAsString())
-                                    ));
-                                } catch (ParseException ex) {
-                                    ex.printStackTrace();
-                                } catch (UnsupportedOperationException ignored){
-
+                                    newsList.add(
+                                            new News(
+                                                    a.getTitle(),
+                                                    a.getDescription(),
+                                                    a.getUrlToImage(),
+                                                    a.getAuthor(),
+                                                    dateFormat.parse(a.getPublishedAt())
+                                            )
+                                    );
+                                } catch (ParseException e) {
+                                    logger.warn("Date parse exception");
                                 }
-                            });
-                    newsRepository.deleteAll();
-                    newsRepository.saveAll(news);
-                    convertAndSendJSON("/topic/news", "news");
-                    logger.info("Parsing is over, parsed " + news.size() + " rows");
-                }
-            }
+                            }
+                            logger.info(newsList.toString());
+                            newsRepository.deleteAll();
+                            newsRepository.saveAll(newsList);
+                            convertAndSendJSON("/topic/news", "news");
+                            logger.info("Parsing is over, parsed " + newsList.size() + " rows");
+                        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            logger.error("Parsing failure",throwable);
+                        }
+                    }
+            );
     }
     private void convertAndSendJSON(String destination,Object payload){
         Map<String, Object> responseMap = new HashMap<>();

@@ -1,4 +1,4 @@
-package ru.themlyakov.driverdiary.sortingUtils;
+package ru.themlyakov.driverdiary.utils;
 
 import ru.themlyakov.driverdiary.enums.CostTypes;
 import com.google.gson.annotations.Expose;

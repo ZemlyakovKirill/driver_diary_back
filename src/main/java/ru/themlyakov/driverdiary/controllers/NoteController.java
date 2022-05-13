@@ -3,6 +3,7 @@ package ru.themlyakov.driverdiary.controllers;
 import ru.themlyakov.driverdiary.entities.User;
 import ru.themlyakov.driverdiary.entities.UserNote;
 import ru.themlyakov.driverdiary.entities.UserVehicle;
+import ru.themlyakov.driverdiary.entities.VehicleCosts;
 import ru.themlyakov.driverdiary.enums.CostTypes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,6 +66,18 @@ public class NoteController extends AbstractController{
             return responseBad("response", "Заметка с таким id не найдена");
         }
         UserNote userNote = note.get();
+        if(userNote.isCost()){
+            vehicleCostsRepository.save(new VehicleCosts(
+                   userNote.getType(),
+                   userNote.getValue(),
+                   userNote.getEndDate(),
+                   userNote.getUserVehicle()
+            ));
+            userNoteRepository.delete(userNote);
+            convertAndSendToUserJSON(principal.getName(), "/note", "note");
+            convertAndSendToUserJSON(principal.getName(), "/cost", "cost");
+            return responseSuccess("response","Расход добавлен");
+        }
         userNote.setCompleted(true);
         userNoteRepository.save(userNote);
         convertAndSendToUserJSON(principal.getName(), "/note", "note");

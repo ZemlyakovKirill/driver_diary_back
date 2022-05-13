@@ -1,7 +1,11 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import ru.themlyakov.driverdiary.entities.News;
-import ru.themlyakov.driverdiary.sortingUtils.Sortinger;
+import ru.themlyakov.driverdiary.utils.PaginationWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -10,16 +14,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @Validated
 @Api(tags = "Пути новостей")
 public class NewsController extends AbstractController {
+    public static final String APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8";
     @ApiOperation(value = "Просмотр всех новостей")
-    @GetMapping("/user/news/all")
-    public ResponseEntity<String> allNews(@RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
-        List<News> newsList = newsRepository.findAll();
-        return responseSuccess("response", Sortinger.sort(News.class, newsList, sortBy));
+    @GetMapping(value = "/user/news/all",produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> allNews(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                                          @RequestParam(value="page",defaultValue = "1") int page) {
+        Pageable pageable=PageRequest.of(page,10,Sort.by(sortBy));
+        Page<News> pagedData = newsRepository.findAll(pageable);
+        return responseSuccess("response", new PaginationWrapper<>(pagedData));
     }
 }

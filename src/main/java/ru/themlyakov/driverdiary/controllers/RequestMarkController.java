@@ -1,5 +1,6 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import ru.themlyakov.driverdiary.entities.AcceptedMark;
 import ru.themlyakov.driverdiary.entities.RequestMark;
 import ru.themlyakov.driverdiary.entities.User;
 import ru.themlyakov.driverdiary.entities.UserRequestMark;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -39,6 +41,7 @@ public class RequestMarkController extends AbstractController{
                     RequestMark newMark = new RequestMark(type, lat, lon, name);
                     requestMarkRepository.save(newMark);
                     userRequestMarkRepository.save(new UserRequestMark(user, newMark, true));
+                    convertAndSendToUserJSON(principal.getName(), "/mark", "mark");
                     return responseSuccess("response", "Метка сохранена, ожидайте подтверждения");
                 }
             }
@@ -62,7 +65,20 @@ public class RequestMarkController extends AbstractController{
                 return responseSuccess("response", "Метка уже была подтверждена");
             } else {
                 userRequestMarkRepository.save(new UserRequestMark(user, mark, isTruth));
-                return responseSuccess("response", "Решение добавлено");
+                List<Integer> integers = userRequestMarkRepository.countChoices(id);
+                int trueChoices=integers.get(0);
+                int falseChoices=integers.get(1);
+                if(trueChoices+falseChoices>=10){
+                    if(trueChoices>falseChoices){
+                        acceptedMarkRepository.save(new AcceptedMark(mark.getType(), mark.getLat(), mark.getLon(), mark.getName()));
+                        requestMarkRepository.delete(mark);
+                        convertAndSendToUserJSON(principal.getName(), "/mark", "mark");
+                    }else if(falseChoices>trueChoices){
+                        requestMarkRepository.delete(mark);
+                        convertAndSendToUserJSON(principal.getName(), "/mark", "mark");
+                    }
+                }
+                return responseSuccess("response", "Статус метки обновлен");
             }
         } catch (EntityNotFoundException ignored) {
             return responseBad("response", "Метка с таким ID не найдена");

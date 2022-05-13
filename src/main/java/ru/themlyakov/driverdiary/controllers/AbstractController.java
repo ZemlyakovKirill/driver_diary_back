@@ -1,6 +1,7 @@
 package ru.themlyakov.driverdiary.controllers;
 
 import ru.themlyakov.driverdiary.providers.JwtProvider;
+import ru.themlyakov.driverdiary.repositories.*;
 import ru.themlyakov.driverdiary.services.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,7 +17,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.themlyakov.driverdiary.repositories.*;
 
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
@@ -66,7 +66,10 @@ public class AbstractController {
     @Autowired
     protected JwtProvider jwtProvider;
 
-    protected static final Gson json = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+    protected static final Gson json = new GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
+            .disableHtmlEscaping()
+            .setPrettyPrinting().create();
 
 
     protected void convertAndSendJSON(String destination,Object payload){
