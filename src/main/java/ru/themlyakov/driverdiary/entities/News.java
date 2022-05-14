@@ -3,6 +3,7 @@ package ru.themlyakov.driverdiary.entities;
 import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Check;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.themlyakov.driverdiary.utils.Sortable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,7 +12,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "news")
-public class News implements Comparable<News> {
+public class News{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "news_id")
@@ -144,8 +145,4 @@ public class News implements Comparable<News> {
                 '}';
     }
 
-    @Override
-    public int compareTo(News o) {
-        return 0;
-    }
 }

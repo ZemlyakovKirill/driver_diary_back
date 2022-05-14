@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.themlyakov.driverdiary.utils.Sortable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ import java.util.Date;
 @Table(name="notes")
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserNote {
+public class UserNote implements Sortable<UserNote> {
     @Expose
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -97,5 +98,24 @@ public class UserNote {
         this.isCost = isCost;
         this.isCompleted = isCompleted;
         this.user = user;
+    }
+
+    @Override
+    public int parameterComparingTo(UserNote other, String parameter) {
+        switch (parameter){
+            case "endDate":
+                return endDate.compareTo(other.endDate);
+            case "description":
+                return description.compareTo(other.description);
+            case "type":
+                return isCost?1:-1;
+            default:
+                return 0;
+        }
+    }
+
+    @Override
+    public String[] getComparableParameters() {
+        return new String[]{"endDate","description","type"};
     }
 }

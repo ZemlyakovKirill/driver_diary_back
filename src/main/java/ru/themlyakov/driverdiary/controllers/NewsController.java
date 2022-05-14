@@ -21,10 +21,11 @@ public class NewsController extends AbstractController {
     public static final String APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8";
     @ApiOperation(value = "Просмотр всех новостей")
     @GetMapping(value = "/user/news/all",produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> allNews(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+    public ResponseEntity<String> allNews(@RequestParam(value = "sortBy", defaultValue = "author") String sortBy,
                                           @RequestParam(value="page",defaultValue = "1") int page) {
         Pageable pageable=PageRequest.of(page,10,Sort.by(sortBy));
         Page<News> pagedData = newsRepository.findAll(pageable);
-        return responseSuccess("response", new PaginationWrapper<>(pagedData));
+        PaginationWrapper wrapper = new PaginationWrapper(pagedData);
+        return responseSuccess("response", wrapper);
     }
 }

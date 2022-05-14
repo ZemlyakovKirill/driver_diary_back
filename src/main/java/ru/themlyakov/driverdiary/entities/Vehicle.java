@@ -1,16 +1,18 @@
 package ru.themlyakov.driverdiary.entities;
 
 import com.google.gson.annotations.Expose;
+import ru.themlyakov.driverdiary.utils.Sortable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Comparator;
 import java.util.Set;
 
 @Entity
 @Table(name = "vehicles")
-public class Vehicle implements Comparable<Vehicle> {
+public class Vehicle {
     @Expose
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -206,10 +208,5 @@ public class Vehicle implements Comparable<Vehicle> {
                 ", fuelCapacity=" + fuelCapacity +
                 ", licensePlateNumber='" + licensePlateNumber + '\'' +
                 '}';
-    }
-
-    @Override
-    public int compareTo(Vehicle o) {
-        return 0;
     }
 }

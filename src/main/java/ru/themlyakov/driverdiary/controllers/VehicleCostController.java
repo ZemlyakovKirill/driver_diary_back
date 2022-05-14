@@ -1,26 +1,24 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import ru.themlyakov.driverdiary.entities.User;
 import ru.themlyakov.driverdiary.entities.UserVehicle;
 import ru.themlyakov.driverdiary.entities.Vehicle;
 import ru.themlyakov.driverdiary.entities.VehicleCosts;
 import ru.themlyakov.driverdiary.enums.CostTypes;
-import ru.themlyakov.driverdiary.utils.Sortinger;
+import ru.themlyakov.driverdiary.utils.PaginationWrapper;
 import ru.themlyakov.driverdiary.utils.VehicleCostType;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @Validated
@@ -69,10 +67,14 @@ public class VehicleCostController extends AbstractController {
 
     @ApiOperation(value = "Просмотр расходов списком")
     @GetMapping("/user/cost/list/all")
-    public ResponseEntity<String> allListCosts(Principal principal, @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
+    public ResponseEntity<String> allListCosts(Principal principal,
+                                               @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
+                                               @RequestParam(value = "page", defaultValue = "1") int page,
+                                               @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
-        Set<VehicleCosts> vehicleCosts = user.getCosts();
-        return responseSuccess("response", Sortinger.sort(VehicleCosts.class, vehicleCosts, sortBy));
+        List<VehicleCosts> vehicleCosts = new ArrayList<>(user.getCosts());
+        PaginationWrapper wrapper=new PaginationWrapper(vehicleCosts,page,sortBy,direction);
+        return responseSuccess("response",wrapper);
     }
 
     @ApiOperation(value = "Удаление расхода")

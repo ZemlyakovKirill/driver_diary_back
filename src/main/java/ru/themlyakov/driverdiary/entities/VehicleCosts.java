@@ -3,15 +3,17 @@ package ru.themlyakov.driverdiary.entities;
 import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import ru.themlyakov.driverdiary.utils.Sortable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "vehicle_costs")
-public class VehicleCosts implements Comparable<VehicleCosts> {
+public class VehicleCosts implements Sortable<VehicleCosts> {
     @Expose
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -111,8 +113,21 @@ public class VehicleCosts implements Comparable<VehicleCosts> {
     }
 
     @Override
-    public int compareTo(VehicleCosts o) {
-        return 0;
+    public int parameterComparingTo(VehicleCosts other, String parameter) {
+        switch (parameter){
+            case "date":
+                return date.compareTo(other.date);
+            case "type":
+                return type.compareTo(other.type);
+            case "value":
+                return value.compareTo(other.value);
+            default:
+                return 0;
+        }
     }
 
+    @Override
+    public String[] getComparableParameters() {
+        return new String[]{"date","type","value"};
+    }
 }

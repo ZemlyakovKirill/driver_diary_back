@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @Validated
@@ -35,11 +33,11 @@ public class VehicleController extends AbstractController{
 
     @ApiOperation(value = "Просмотр всех транспортных средств")
     @GetMapping("/user/vehicle/all")
-    public ResponseEntity<String> allCars(Principal principal, @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+    public ResponseEntity<String> allCars(Principal principal,
                                           @RequestParam(value = "page", defaultValue = "1") int page) {
         User byUsername = userService.findByUsername(principal.getName());
-        Set<Vehicle> vehicles = byUsername.getVehicles();
-        PaginationWrapper<Object> wrappedData = new PaginationWrapper<>(Arrays.asList(vehicles.toArray()), page);
+        List<Vehicle> vehicles = new ArrayList<>(byUsername.getVehicles());
+        PaginationWrapper wrappedData = new PaginationWrapper(vehicles, page);
         return responseSuccess("response",wrappedData);
     }
 

@@ -1,5 +1,6 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import org.springframework.data.domain.Sort;
 import ru.themlyakov.driverdiary.entities.User;
 import ru.themlyakov.driverdiary.entities.UserNote;
 import ru.themlyakov.driverdiary.entities.UserVehicle;
@@ -10,12 +11,14 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.themlyakov.driverdiary.utils.PaginationWrapper;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -151,25 +154,34 @@ public class NoteController extends AbstractController{
 
     @ApiOperation(value = "Просмотр всех незавершенных временных заметок")
     @GetMapping("/user/note/uncompleted/all")
-    public ResponseEntity<String> allUncompletedNotes(Principal principal) {
+    public ResponseEntity<String> allUncompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+                                                      @RequestParam(value = "page", defaultValue = "1") int page,
+                                                      @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
-        Set<UserNote> notes = user.getNotes().stream().filter(userNote -> !userNote.isCompleted()).collect(Collectors.toSet());
-        return responseSuccess("response", notes);
+        List<UserNote> notes = user.getNotes().stream().filter(userNote -> !userNote.isCompleted()).collect(Collectors.toList());
+        PaginationWrapper wrapper = new PaginationWrapper(notes, page, sortBy, direction);
+        return responseSuccess("response", wrapper);
     }
 
     @ApiOperation(value = "Просмотр всех выполненных временных меток")
     @GetMapping("/user/note/completed/all")
-    public ResponseEntity<String> allCompletedNotes(Principal principal) {
+    public ResponseEntity<String> allCompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+                                                    @RequestParam(value = "page", defaultValue = "1") int page,
+                                                    @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
-        Set<UserNote> notes = user.getNotes().stream().filter(UserNote::isCompleted).collect(Collectors.toSet());
-        return responseSuccess("response", notes);
+        List<UserNote> notes = user.getNotes().stream().filter(UserNote::isCompleted).collect(Collectors.toList());
+        PaginationWrapper wrapper = new PaginationWrapper(notes, page, sortBy, direction);
+        return responseSuccess("response", wrapper);
     }
 
     @ApiOperation(value = "Просмотр всех просроченных временных меток")
     @GetMapping("/user/note/overdued/all")
-    public ResponseEntity<String> allOverduedNotes(Principal principal) {
+    public ResponseEntity<String> allOverduedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+                                                   @RequestParam(value = "page", defaultValue = "1") int page,
+                                                   @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
-        Set<UserNote> notes = user.getNotes().stream().filter((userNote) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toSet());
-        return responseSuccess("response", notes);
+        List<UserNote> notes = user.getNotes().stream().filter((userNote) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toList());
+        PaginationWrapper wrapper = new PaginationWrapper(notes, page, sortBy, direction);
+        return responseSuccess("response", wrapper);
     }
 }
