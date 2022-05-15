@@ -34,7 +34,7 @@ public class VehicleController extends AbstractController{
     @ApiOperation(value = "Просмотр всех транспортных средств")
     @GetMapping("/user/vehicle/all")
     public ResponseEntity<String> allCars(Principal principal,
-                                          @RequestParam(value = "page", defaultValue = "1") int page) {
+                                          @RequestParam(value = "page", defaultValue = "0") int page) {
         User byUsername = userService.findByUsername(principal.getName());
         List<Vehicle> vehicles = new ArrayList<>(byUsername.getVehicles());
         PaginationWrapper wrappedData = new PaginationWrapper(vehicles, page);

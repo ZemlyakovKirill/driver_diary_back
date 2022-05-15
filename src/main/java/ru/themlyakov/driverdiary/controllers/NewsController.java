@@ -22,7 +22,7 @@ public class NewsController extends AbstractController {
     @ApiOperation(value = "Просмотр всех новостей")
     @GetMapping(value = "/user/news/all",produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<String> allNews(@RequestParam(value = "sortBy", defaultValue = "author") String sortBy,
-                                          @RequestParam(value="page",defaultValue = "1") int page) {
+                                          @RequestParam(value="page",defaultValue = "0") int page) {
         Pageable pageable=PageRequest.of(page,10,Sort.by(sortBy));
         Page<News> pagedData = newsRepository.findAll(pageable);
         PaginationWrapper wrapper = new PaginationWrapper(pagedData);

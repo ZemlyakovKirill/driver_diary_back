@@ -155,7 +155,7 @@ public class NoteController extends AbstractController{
     @ApiOperation(value = "Просмотр всех незавершенных временных заметок")
     @GetMapping("/user/note/uncompleted/all")
     public ResponseEntity<String> allUncompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
-                                                      @RequestParam(value = "page", defaultValue = "1") int page,
+                                                      @RequestParam(value = "page", defaultValue = "0") int page,
                                                       @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter(userNote -> !userNote.isCompleted()).collect(Collectors.toList());
@@ -166,7 +166,7 @@ public class NoteController extends AbstractController{
     @ApiOperation(value = "Просмотр всех выполненных временных меток")
     @GetMapping("/user/note/completed/all")
     public ResponseEntity<String> allCompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
-                                                    @RequestParam(value = "page", defaultValue = "1") int page,
+                                                    @RequestParam(value = "page", defaultValue = "0") int page,
                                                     @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter(UserNote::isCompleted).collect(Collectors.toList());
@@ -177,7 +177,7 @@ public class NoteController extends AbstractController{
     @ApiOperation(value = "Просмотр всех просроченных временных меток")
     @GetMapping("/user/note/overdued/all")
     public ResponseEntity<String> allOverduedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
-                                                   @RequestParam(value = "page", defaultValue = "1") int page,
+                                                   @RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter((userNote) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toList());

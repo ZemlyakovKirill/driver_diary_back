@@ -12,6 +12,9 @@ public class PaginationWrapper {
     private final int page;
     @Expose
     private final int totalPages;
+
+    @Expose
+    private final long totalElements;
     @Expose
     private final List data;
 
@@ -21,15 +24,17 @@ public class PaginationWrapper {
         this.page = pagedData.getNumber();
         this.totalPages=pagedData.getTotalPages();
         this.data= pagedData.getContent();
+        this.totalElements= pagedData.getTotalElements() ;
     }
 
     public <S extends Sortable<S>>PaginationWrapper(List<S> unPagedData, int page, String sortingParameter, Sort.Direction direction){
-        if(page<1){
-            throw new IllegalArgumentException("Page must be more or equal to 1");
+        if(page<0){
+            throw new IllegalArgumentException("Страница должна быть не меньше 0");
         }
-        int fromIndex = (page - 1) * PAGE_SIZE;
+        int fromIndex = (page) * PAGE_SIZE;
         this.page=page;
         this.totalPages=(int) Math.ceil((double)unPagedData.size()/PAGE_SIZE);
+        this.totalElements= unPagedData.size();
         if(fromIndex> unPagedData.size()){
             this.data=new ArrayList<>();
             return;
@@ -44,12 +49,13 @@ public class PaginationWrapper {
     }
 
     public <S>PaginationWrapper(List<S> unPagedData, int page){
-        if(page<1){
-            throw new IllegalArgumentException("Page must be more or equal to 1");
+        if(page<0){
+            throw new IllegalArgumentException("Страница должна быть не меньше 0");
         }
-        int fromIndex = (page - 1) * PAGE_SIZE;
+        int fromIndex = (page) * PAGE_SIZE;
         this.page=page;
         this.totalPages=(int) Math.ceil((double)unPagedData.size()/PAGE_SIZE);
+        this.totalElements= unPagedData.size();
         if(fromIndex> unPagedData.size()){
             this.data=new ArrayList<>();
             return;

@@ -69,7 +69,7 @@ public class VehicleCostController extends AbstractController {
     @GetMapping("/user/cost/list/all")
     public ResponseEntity<String> allListCosts(Principal principal,
                                                @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
-                                               @RequestParam(value = "page", defaultValue = "1") int page,
+                                               @RequestParam(value = "page", defaultValue = "0") int page,
                                                @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<VehicleCosts> vehicleCosts = new ArrayList<>(user.getCosts());
