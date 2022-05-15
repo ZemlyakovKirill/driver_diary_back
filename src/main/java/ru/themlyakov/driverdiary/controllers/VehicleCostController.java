@@ -65,9 +65,9 @@ public class VehicleCostController extends AbstractController {
         return responseSuccess("response", new VehicleCostType[]{refueling, washing, service, other});
     }
 
-    @ApiOperation(value = "Просмотр расходов списком")
-    @GetMapping("/user/cost/list/all")
-    public ResponseEntity<String> allListCosts(Principal principal,
+    @ApiOperation(value = "Просмотр постранично расходов списком")
+    @GetMapping("/user/cost/list/paged")
+    public ResponseEntity<String> pagedListCosts(Principal principal,
                                                @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
                                                @RequestParam(value = "page", defaultValue = "0") int page,
                                                @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
@@ -75,6 +75,14 @@ public class VehicleCostController extends AbstractController {
         List<VehicleCosts> vehicleCosts = new ArrayList<>(user.getCosts());
         PaginationWrapper wrapper=new PaginationWrapper(vehicleCosts,page,sortBy,direction);
         return responseSuccess("response",wrapper);
+    }
+
+    @ApiOperation(value = "Просмотр всех расходов списком")
+    @GetMapping("/user/cost/list/all")
+    public ResponseEntity<String> allListCosts(Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        Set<VehicleCosts> vehicleCosts = user.getCosts();
+        return responseSuccess("response",vehicleCosts);
     }
 
     @ApiOperation(value = "Удаление расхода")

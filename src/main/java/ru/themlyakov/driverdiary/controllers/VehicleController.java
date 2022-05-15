@@ -31,14 +31,22 @@ public class VehicleController extends AbstractController{
         return responseCreated("status", "Created", "response", vehicle);
     }
 
-    @ApiOperation(value = "Просмотр всех транспортных средств")
-    @GetMapping("/user/vehicle/all")
-    public ResponseEntity<String> allCars(Principal principal,
+    @ApiOperation(value = "Просмотр постранично транспортных средств")
+    @GetMapping("/user/vehicle/paged")
+    public ResponseEntity<String> pagedCars(Principal principal,
                                           @RequestParam(value = "page", defaultValue = "0") int page) {
         User byUsername = userService.findByUsername(principal.getName());
         List<Vehicle> vehicles = new ArrayList<>(byUsername.getVehicles());
         PaginationWrapper wrappedData = new PaginationWrapper(vehicles, page);
         return responseSuccess("response",wrappedData);
+    }
+
+    @ApiOperation(value = "Просмотр постранично транспортных средств")
+    @GetMapping("/user/vehicle/all")
+    public ResponseEntity<String> allCars(Principal principal) {
+        User byUsername = userService.findByUsername(principal.getName());
+        Set<Vehicle> vehicles = byUsername.getVehicles();
+        return responseSuccess("response",vehicles);
     }
 
     @ApiOperation(value = "Редактирование транспортного средства")

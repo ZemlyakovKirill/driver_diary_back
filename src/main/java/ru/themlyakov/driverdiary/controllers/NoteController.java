@@ -152,9 +152,9 @@ public class NoteController extends AbstractController{
         }
     }
 
-    @ApiOperation(value = "Просмотр всех незавершенных временных заметок")
-    @GetMapping("/user/note/uncompleted/all")
-    public ResponseEntity<String> allUncompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+    @ApiOperation(value = "Просмотр постранично незавершенных временных заметок")
+    @GetMapping("/user/note/uncompleted/paged")
+    public ResponseEntity<String> pagedUncompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
                                                       @RequestParam(value = "page", defaultValue = "0") int page,
                                                       @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
@@ -163,9 +163,17 @@ public class NoteController extends AbstractController{
         return responseSuccess("response", wrapper);
     }
 
-    @ApiOperation(value = "Просмотр всех выполненных временных меток")
-    @GetMapping("/user/note/completed/all")
-    public ResponseEntity<String> allCompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+    @ApiOperation(value = "Просмотр всех незавершенных временных заметок")
+    @GetMapping("/user/note/uncompleted/all")
+    public ResponseEntity<String> allUncompletedNotes(Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        List<UserNote> notes = user.getNotes().stream().filter(userNote -> !userNote.isCompleted()).collect(Collectors.toList());
+        return responseSuccess("response", notes);
+    }
+
+    @ApiOperation(value = "Просмотр постранично выполненных временных меток")
+    @GetMapping("/user/note/completed/paged")
+    public ResponseEntity<String> pagedCompletedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
                                                     @RequestParam(value = "page", defaultValue = "0") int page,
                                                     @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
@@ -174,14 +182,30 @@ public class NoteController extends AbstractController{
         return responseSuccess("response", wrapper);
     }
 
-    @ApiOperation(value = "Просмотр всех просроченных временных меток")
-    @GetMapping("/user/note/overdued/all")
-    public ResponseEntity<String> allOverduedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+    @ApiOperation(value = "Просмотр всех выполненных временных меток")
+    @GetMapping("/user/note/completed/all")
+    public ResponseEntity<String> allCompletedNotes(Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        List<UserNote> notes = user.getNotes().stream().filter(UserNote::isCompleted).collect(Collectors.toList());
+        return responseSuccess("response", notes);
+    }
+
+    @ApiOperation(value = "Просмотр постранично просроченных временных меток")
+    @GetMapping("/user/note/overdued/paged")
+    public ResponseEntity<String> pagedOverduedNotes(Principal principal,@RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
                                                    @RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter((userNote) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toList());
         PaginationWrapper wrapper = new PaginationWrapper(notes, page, sortBy, direction);
         return responseSuccess("response", wrapper);
+    }
+
+    @ApiOperation(value = "Просмотр всех просроченных временных меток")
+    @GetMapping("/user/note/overdued/all")
+    public ResponseEntity<String> allOverduedNotes(Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        List<UserNote> notes = user.getNotes().stream().filter((userNote) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toList());
+        return responseSuccess("response", notes);
     }
 }
