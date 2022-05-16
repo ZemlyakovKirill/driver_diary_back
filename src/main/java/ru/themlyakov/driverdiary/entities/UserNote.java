@@ -106,8 +106,14 @@ public class UserNote implements Sortable<UserNote> {
             case "endDate":
                 return endDate.compareTo(other.endDate);
             case "description":
+                if(description==null){
+                    return -1;
+                }
                 return description.compareTo(other.description);
             case "type":
+                if(type==null){
+                    return -1;
+                }
                 return isCost?1:-1;
             default:
                 return 0;
