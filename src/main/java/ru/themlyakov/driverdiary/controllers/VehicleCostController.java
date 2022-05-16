@@ -12,6 +12,7 @@ import ru.themlyakov.driverdiary.entities.Vehicle;
 import ru.themlyakov.driverdiary.entities.VehicleCosts;
 import ru.themlyakov.driverdiary.enums.CostTypes;
 import ru.themlyakov.driverdiary.utils.PaginationWrapper;
+import ru.themlyakov.driverdiary.utils.Sortinger;
 import ru.themlyakov.driverdiary.utils.VehicleCostType;
 
 import javax.transaction.Transactional;
@@ -79,9 +80,12 @@ public class VehicleCostController extends AbstractController {
 
     @ApiOperation(value = "Просмотр всех расходов списком")
     @GetMapping("/user/cost/list/all")
-    public ResponseEntity<String> allListCosts(Principal principal) {
+    public ResponseEntity<String> allListCosts(Principal principal,
+                                               @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
+                                               @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
-        Set<VehicleCosts> vehicleCosts = user.getCosts();
+        List<VehicleCosts> vehicleCosts = new ArrayList<>(user.getCosts());
+        Sortinger.sort(vehicleCosts,sortBy,direction);
         return responseSuccess("response",vehicleCosts);
     }
 

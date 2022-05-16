@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.themlyakov.driverdiary.utils.PaginationWrapper;
+import ru.themlyakov.driverdiary.utils.Sortinger;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
@@ -165,9 +166,12 @@ public class NoteController extends AbstractController{
 
     @ApiOperation(value = "Просмотр всех незавершенных временных заметок")
     @GetMapping("/user/note/uncompleted/all")
-    public ResponseEntity<String> allUncompletedNotes(Principal principal) {
+    public ResponseEntity<String> allUncompletedNotes(Principal principal,
+                                                      @RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+                                                      @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter(userNote -> !userNote.isCompleted()).collect(Collectors.toList());
+        Sortinger.sort(notes, sortBy, direction);
         return responseSuccess("response", notes);
     }
 
@@ -184,9 +188,12 @@ public class NoteController extends AbstractController{
 
     @ApiOperation(value = "Просмотр всех выполненных временных меток")
     @GetMapping("/user/note/completed/all")
-    public ResponseEntity<String> allCompletedNotes(Principal principal) {
+    public ResponseEntity<String> allCompletedNotes(Principal principal,
+                                                    @RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+                                                    @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter(UserNote::isCompleted).collect(Collectors.toList());
+        Sortinger.sort(notes, sortBy, direction);
         return responseSuccess("response", notes);
     }
 
@@ -203,9 +210,12 @@ public class NoteController extends AbstractController{
 
     @ApiOperation(value = "Просмотр всех просроченных временных меток")
     @GetMapping("/user/note/overdued/all")
-    public ResponseEntity<String> allOverduedNotes(Principal principal) {
+    public ResponseEntity<String> allOverduedNotes(Principal principal,
+                                                   @RequestParam(value = "sortBy", defaultValue = "description") String sortBy,
+                                                   @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<UserNote> notes = user.getNotes().stream().filter((userNote) -> userNote.getEndDate().compareTo(Calendar.getInstance().getTime()) < 0).collect(Collectors.toList());
+        Sortinger.sort(notes,sortBy,direction);
         return responseSuccess("response", notes);
     }
 }

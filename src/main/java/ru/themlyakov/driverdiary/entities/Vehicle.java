@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "vehicles")
-public class Vehicle {
+public class Vehicle implements Sortable<Vehicle> {
     @Expose
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -208,5 +208,18 @@ public class Vehicle {
                 ", fuelCapacity=" + fuelCapacity +
                 ", licensePlateNumber='" + licensePlateNumber + '\'' +
                 '}';
+    }
+
+    @Override
+    public int parameterComparingTo(Vehicle other, String parameter) {
+        if ("mark".equals(parameter)) {
+            return mark.compareTo(other.mark);
+        }
+        return 0;
+    }
+
+    @Override
+    public String[] getComparableParameters() {
+        return new String[]{"mark"};
     }
 }

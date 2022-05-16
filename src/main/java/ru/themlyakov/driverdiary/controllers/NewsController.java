@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.themlyakov.driverdiary.utils.Sortinger;
 
 import java.util.List;
 
@@ -33,8 +34,9 @@ public class NewsController extends AbstractController {
 
     @ApiOperation(value = "Просмотр постранично новостей")
     @GetMapping(value = "/user/news/all",produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> allNews() {
-        List<News> news = newsRepository.findAll();
+    public ResponseEntity<String> allNews(@RequestParam(value = "sortBy", defaultValue = "author") String sortBy) {
+        Sort sort = Sort.by(sortBy).ascending();
+        List<News> news = newsRepository.findAll(sort);
         return responseSuccess("response", news);
     }
 }

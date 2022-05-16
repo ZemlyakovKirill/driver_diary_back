@@ -1,5 +1,6 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import org.springframework.data.domain.Sort;
 import ru.themlyakov.driverdiary.entities.User;
 import ru.themlyakov.driverdiary.entities.UserVehicle;
 import ru.themlyakov.driverdiary.entities.Vehicle;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.themlyakov.driverdiary.utils.Sortinger;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -45,7 +47,8 @@ public class VehicleController extends AbstractController{
     @GetMapping("/user/vehicle/all")
     public ResponseEntity<String> allCars(Principal principal) {
         User byUsername = userService.findByUsername(principal.getName());
-        Set<Vehicle> vehicles = byUsername.getVehicles();
+        List<Vehicle> vehicles = new ArrayList<>(byUsername.getVehicles());
+        Sortinger.sort(vehicles,"mark", Sort.Direction.ASC);
         return responseSuccess("response",vehicles);
     }
 
