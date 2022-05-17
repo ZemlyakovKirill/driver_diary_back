@@ -12,7 +12,6 @@ import ru.themlyakov.driverdiary.entities.UserVehicle;
 import ru.themlyakov.driverdiary.entities.Vehicle;
 import ru.themlyakov.driverdiary.entities.VehicleCosts;
 import ru.themlyakov.driverdiary.enums.CostTypes;
-import ru.themlyakov.driverdiary.enums.SearchIntervalForTypeCost;
 import ru.themlyakov.driverdiary.utils.PaginationWrapper;
 import ru.themlyakov.driverdiary.utils.Sortinger;
 import ru.themlyakov.driverdiary.utils.VehicleCostType;
@@ -23,7 +22,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @Validated
@@ -37,9 +35,9 @@ public class VehicleCostController extends AbstractController {
         @Expose
         private int month;
         @Expose
-        private Map<CostTypes, Double> result;
+        private List<VehicleCostType> result;
 
-        private VehicleTypeCostWrapper(int month, Map<CostTypes, Double> result) {
+        private VehicleTypeCostWrapper(int month, List<VehicleCostType> result) {
             this.month = month;
             this.result = result;
         }
@@ -51,7 +49,11 @@ public class VehicleCostController extends AbstractController {
                 cal.setTime(vc.getDate());
                 return cal.get(Calendar.MONTH) == month-1 && cal.get(Calendar.YEAR) == currYear;
             }).collect(Collectors.groupingBy(VehicleCosts::getType, Collectors.summingDouble(VehicleCosts::getValue)));
-            return new VehicleTypeCostWrapper(month,collect);
+            List<VehicleCostType> costTypes=new ArrayList<>();
+            collect.forEach((ct,val)-> costTypes.add(
+                    new VehicleCostType(ct,val)
+            ));
+            return new VehicleTypeCostWrapper(month,costTypes);
         }
     }
 
