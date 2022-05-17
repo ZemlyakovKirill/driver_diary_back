@@ -50,7 +50,7 @@ public class VehicleCostController extends AbstractController {
             Map<CostTypes, Double> collect = vehicleCosts.stream().filter(vc -> {
                 cal.setTime(vc.getDate());
                 return cal.get(Calendar.MONTH) == month-1 && cal.get(Calendar.YEAR) == currYear;
-            }).collect(Collectors.groupingBy(o -> CostTypes.fromOrdinal(Integer.parseInt(o.getType())), Collectors.summingDouble(VehicleCosts::getValue)));
+            }).collect(Collectors.groupingBy(VehicleCosts::getType, Collectors.summingDouble(VehicleCosts::getValue)));
             return new VehicleTypeCostWrapper(month,collect);
         }
     }
@@ -58,7 +58,7 @@ public class VehicleCostController extends AbstractController {
     //Работа с расходами пользователя
     @ApiOperation(value = "Добавление расхода транспортного средства")
     @PostMapping("/user/cost/add")
-    public ResponseEntity<String> addCost(Principal principal, @RequestParam("vId") Long vehicleID, @RequestParam("type") String type, @RequestParam("value") Float value, @RequestParam("date") String date) throws ParseException {
+    public ResponseEntity<String> addCost(Principal principal, @RequestParam("vId") Long vehicleID, @RequestParam("type") CostTypes type, @RequestParam("value") Float value, @RequestParam("date") String date) throws ParseException {
 
         User user = userService.findByUsername(principal.getName());
         Vehicle vehicle1 = vehicleRepository.getById(vehicleID);
@@ -68,7 +68,6 @@ public class VehicleCostController extends AbstractController {
             if (userVehicle.getVehicle().equals(vehicle1)) {
                 try {
                     Set<VehicleCosts> vehicleCosts = userVehicle.getVehicleCosts();
-                    CostTypes.valueOf(type);
                     VehicleCosts cost = new VehicleCosts(type, value, date1, userVehicle);
                     vehicleCostsRepository.save(cost);
                     convertAndSendToUserJSON(principal.getName(), "/cost", "cost");
@@ -161,7 +160,7 @@ public class VehicleCostController extends AbstractController {
 
     @ApiOperation(value = "Редактирование расхода")
     @PutMapping("/user/cost/edit/{id}")
-    public ResponseEntity<String> editCost(Principal principal, @PathVariable("id") Long id, @RequestParam("vId") Long vehicleID, @RequestParam("type") String type, @RequestParam("value") Float value, @RequestParam("date") String date) throws ParseException {
+    public ResponseEntity<String> editCost(Principal principal, @PathVariable("id") Long id, @RequestParam("vId") Long vehicleID, @RequestParam("type") CostTypes type, @RequestParam("value") Float value, @RequestParam("date") String date) throws ParseException {
         User user = userService.findByUsername(principal.getName());
         Optional<VehicleCosts> cost = user.getCosts().stream().filter(c -> c.getCostId().equals(id)).findFirst();
         Vehicle vehicle = vehicleRepository.getById(vehicleID);
@@ -172,7 +171,6 @@ public class VehicleCostController extends AbstractController {
                 if (userVehicle.getVehicle().equals(vehicle)) {
                     try {
                         Set<VehicleCosts> vehicleCosts = userVehicle.getVehicleCosts();
-                        CostTypes.valueOf(type);
                         VehicleCosts newCost = new VehicleCosts(id, type, value, parsedDate, userVehicle);
                         vehicleCostsRepository.save(newCost);
                         convertAndSendToUserJSON(principal.getName(), "/cost", "cost");

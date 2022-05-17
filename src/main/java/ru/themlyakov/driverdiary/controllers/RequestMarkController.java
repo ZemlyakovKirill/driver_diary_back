@@ -29,10 +29,9 @@ public class RequestMarkController extends AbstractController{
     @ApiOperation(value = "Добавление пользовательской метки на карте")
     @Transactional
     @PostMapping("/user/mark/set")
-    public ResponseEntity<String> setMark(Principal principal, @RequestParam("lat") Float lat, @RequestParam("lon") Float lon, @RequestParam("type") String type, @RequestParam("name") String name) {
+    public ResponseEntity<String> setMark(Principal principal, @RequestParam("lat") Float lat, @RequestParam("lon") Float lon, @RequestParam("type") SearchTypeMarks type, @RequestParam("name") String name) {
         User user = userService.findByUsername(principal.getName());
         try {
-            SearchTypeMarks.valueOf(type);
             RequestMark mark = requestMarkRepository.getRequestMarkByLatAndLonAndType(lat, lon, type);
             if (mark != null) {
                 return responseBad("response", "Подтвердите метку");

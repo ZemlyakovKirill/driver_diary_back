@@ -3,6 +3,7 @@ package ru.themlyakov.driverdiary.entities;
 import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import ru.themlyakov.driverdiary.enums.CostTypes;
 import ru.themlyakov.driverdiary.utils.Sortable;
 
 import javax.persistence.*;
@@ -21,9 +22,10 @@ public class VehicleCosts implements Sortable<VehicleCosts> {
     private Long costId;
 
     @Expose
-    @Column(name = "type", length = 20, nullable = false)
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
     @NotNull(message = "Тип расхода не может быть нулевым")
-    private String type;
+    private CostTypes type;
 
     @Expose
     @Column(name = "value", nullable = false)
@@ -47,7 +49,7 @@ public class VehicleCosts implements Sortable<VehicleCosts> {
     public VehicleCosts() {
     }
 
-    public VehicleCosts(Long costId, String type, Float value, Date date, UserVehicle userVehicle) {
+    public VehicleCosts(Long costId, CostTypes type, Float value, Date date, UserVehicle userVehicle) {
         this.costId = costId;
         this.type = type;
         this.value = value;
@@ -55,7 +57,7 @@ public class VehicleCosts implements Sortable<VehicleCosts> {
         this.userVehicle = userVehicle;
     }
 
-    public VehicleCosts( String type, Float value, Date date, UserVehicle userVehicle) {
+    public VehicleCosts( CostTypes type, Float value, Date date, UserVehicle userVehicle) {
         this.type = type;
         this.value = value;
         this.date = date;
@@ -70,11 +72,11 @@ public class VehicleCosts implements Sortable<VehicleCosts> {
         this.costId = costId;
     }
 
-    public String getType() {
+    public CostTypes getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(CostTypes type) {
         this.type = type;
     }
 

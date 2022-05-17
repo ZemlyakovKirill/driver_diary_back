@@ -33,14 +33,13 @@ public class NoteController extends AbstractController{
 
     @ApiOperation(value = "Добавление временной заметки")
     @PostMapping("/user/note/add")
-    public ResponseEntity<String> addNote(Principal principal, @RequestParam(value = "vehicle_id", required = false) Long vehicleID, @RequestParam(value = "description", required = false) String description, @RequestParam(value = "value", required = false) Float value, @RequestParam("end_date") String endDate, @RequestParam("is_cost") boolean isCost, @RequestParam("is_completed") boolean isCompleted, @RequestParam(value = "cost_type", required = false) String costType) throws ParseException {
+    public ResponseEntity<String> addNote(Principal principal, @RequestParam(value = "vehicle_id", required = false) Long vehicleID, @RequestParam(value = "description", required = false) String description, @RequestParam(value = "value", required = false) Float value, @RequestParam("end_date") String endDate, @RequestParam("is_cost") boolean isCost, @RequestParam("is_completed") boolean isCompleted, @RequestParam(value = "cost_type", required = false) CostTypes costType) throws ParseException {
         User user = userService.findByUsername(principal.getName());
         try {
             if (isCost) {
                 if (vehicleID == null) throw new NullPointerException("Поле идентификатора ТС не может быть пустым");
                 if (costType == null) throw new NullPointerException("Поле тип не может быть пустым");
                 if (value == null) throw new NullPointerException("Поле величины расхода не может быть пустым");
-                CostTypes.valueOf(costType);
                 Optional<UserVehicle> vehicle = user.getUserVehicles().stream().filter(userVehicle -> userVehicle.getVehicle().getId().equals(vehicleID)).findFirst();
                 if (vehicle.isPresent()) {
                     UserNote note = new UserNote(description, value, dateFormat.parse(endDate), true, isCompleted, costType, user, vehicle.get());
@@ -105,7 +104,7 @@ public class NoteController extends AbstractController{
 
     @ApiOperation(value = "Редактирование временной метки")
     @PutMapping("/user/note/edit/{id}")
-    public ResponseEntity<String> editNote(Principal principal, @PathVariable("id") Long noteID, @RequestParam(value = "vehicle_id", required = false) Long vehicleID, @RequestParam(value = "description", required = false) String description, @RequestParam(value = "value", required = false) Float value, @RequestParam("end_date") String endDate, @RequestParam("is_cost") boolean isCost, @RequestParam("is_completed") boolean isCompleted, @RequestParam(value = "cost_type", required = false) String costType) throws ParseException {
+    public ResponseEntity<String> editNote(Principal principal, @PathVariable("id") Long noteID, @RequestParam(value = "vehicle_id", required = false) Long vehicleID, @RequestParam(value = "description", required = false) String description, @RequestParam(value = "value", required = false) Float value, @RequestParam("end_date") String endDate, @RequestParam("is_cost") boolean isCost, @RequestParam("is_completed") boolean isCompleted, @RequestParam(value = "cost_type", required = false) CostTypes costType) throws ParseException {
         User user = userService.findByUsername(principal.getName());
         Optional<UserNote> note = user.getNotes().stream().filter(userNote -> userNote.getId().equals(noteID)).findFirst();
         if (!note.isPresent()) {
@@ -116,7 +115,6 @@ public class NoteController extends AbstractController{
                 if (vehicleID == null) throw new NullPointerException("Поле идентификатора ТС не может быть пустым");
                 if (costType == null) throw new NullPointerException("Поле тип не может быть пустым");
                 if (value == null) throw new NullPointerException("Поле велечины расхода не может быть пустым");
-                CostTypes.valueOf(costType);
                 Optional<UserVehicle> vehicle = user.getUserVehicles().stream().filter(userVehicle -> userVehicle.getVehicle().getId().equals(vehicleID)).findFirst();
                 if (vehicle.isPresent()) {
                     UserNote noteEdited = new UserNote(noteID, description, value, dateFormat.parse(endDate), true, isCompleted, costType, user, vehicle.get());

@@ -4,7 +4,9 @@ import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.themlyakov.driverdiary.enums.CostTypes;
 import ru.themlyakov.driverdiary.utils.Sortable;
+import ru.themlyakov.driverdiary.utils.VehicleCostType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -48,8 +50,9 @@ public class UserNote implements Sortable<UserNote> {
     private boolean isCompleted;
 
     @Expose
+    @Enumerated(EnumType.ORDINAL)
     @Column(name="type")
-    private String type;
+    private CostTypes type;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name="user_id",nullable = false)
@@ -61,7 +64,7 @@ public class UserNote implements Sortable<UserNote> {
     @JoinColumn(name="ownership_id")
     private UserVehicle userVehicle;
 
-    public UserNote(String description, Float value, Date endDate, boolean isCost, boolean isCompleted, String typeCost, User user, UserVehicle userVehicle) {
+    public UserNote(String description, Float value, Date endDate, boolean isCost, boolean isCompleted, CostTypes typeCost, User user, UserVehicle userVehicle) {
         this.description = description;
         this.value = value;
         this.endDate = endDate;
@@ -72,7 +75,7 @@ public class UserNote implements Sortable<UserNote> {
         this.userVehicle = userVehicle;
     }
 
-    public UserNote(String description, Float value, Date endDate, boolean isCost, boolean isCompleted, String typeCost, User user) {
+    public UserNote(String description, Float value, Date endDate, boolean isCost, boolean isCompleted, CostTypes typeCost, User user) {
         this.description = description;
         this.value = value;
         this.endDate = endDate;

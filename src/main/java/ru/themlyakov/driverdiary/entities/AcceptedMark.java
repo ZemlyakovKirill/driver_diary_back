@@ -2,6 +2,7 @@ package ru.themlyakov.driverdiary.entities;
 
 import com.google.gson.annotations.Expose;
 import org.hibernate.validator.constraints.CodePointLength;
+import ru.themlyakov.driverdiary.enums.SearchTypeMarks;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,10 +17,10 @@ public class AcceptedMark {
     private Long id;
 
     @Expose
-    @Column(name="type",nullable = false,length = 50)
+    @Column(name="type",nullable = false)
+    @Enumerated(EnumType.ORDINAL)
     @NotNull(message="Тип марки не может быть нулевой")
-    @Size(max=50,message = "Длина типа марки ТС должна быть меньше или равна 50 символам")
-    private String type;
+    private SearchTypeMarks type;
 
     @Expose
     @Column(name="lat",nullable = false)
@@ -37,7 +38,7 @@ public class AcceptedMark {
     @NotNull(message = "Наименование не может быть нулевым")
     private String name;
 
-    public AcceptedMark(String type, Float lat, Float lon, String name) {
+    public AcceptedMark(SearchTypeMarks type, Float lat, Float lon, String name) {
         this.type = type;
         this.lat = lat;
         this.lon = lon;
@@ -64,11 +65,11 @@ public class AcceptedMark {
         this.id = id;
     }
 
-    public String getType() {
+    public SearchTypeMarks getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(SearchTypeMarks type) {
         this.type = type;
     }
 

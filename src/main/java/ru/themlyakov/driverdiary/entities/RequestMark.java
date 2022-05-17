@@ -1,6 +1,7 @@
 package ru.themlyakov.driverdiary.entities;
 
 import com.google.gson.annotations.Expose;
+import ru.themlyakov.driverdiary.enums.SearchTypeMarks;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,10 +19,10 @@ public class RequestMark {
     private Long id;
 
     @Expose
-    @Column(name = "type", nullable = false, length = 50)
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
     @NotNull(message="Тип марки не может быть нулевой")
-    @Size(max=50,message = "Длина типа марки  должна быть меньше или равна 50 символам")
-    private String type;
+    private SearchTypeMarks type;
 
     @Expose
     @Column(name = "lat", nullable = false)
@@ -40,7 +41,7 @@ public class RequestMark {
     private String name;
 
 
-    public RequestMark(String type, Float lat, Float lon, String name) {
+    public RequestMark(SearchTypeMarks type, Float lat, Float lon, String name) {
         this.type = type;
         this.lat = lat;
         this.lon = lon;
@@ -60,11 +61,11 @@ public class RequestMark {
         this.id = id;
     }
 
-    public String getType() {
+    public SearchTypeMarks getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(SearchTypeMarks type) {
         this.type = type;
     }
 

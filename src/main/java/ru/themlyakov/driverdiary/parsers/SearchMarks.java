@@ -39,7 +39,7 @@ public class SearchMarks {
 
             main.get("features").getAsJsonArray().forEach(e -> {
                 marks.add(new AcceptedMark(
-                        type.toString(),
+                        type,
                         e.getAsJsonObject().get("geometry").getAsJsonObject().get("coordinates").getAsJsonArray().get(1).getAsFloat(),
                         e.getAsJsonObject().get("geometry").getAsJsonObject().get("coordinates").getAsJsonArray().get(0).getAsFloat(),
                         e.getAsJsonObject().get("properties").getAsJsonObject().get("name").getAsString()
