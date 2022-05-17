@@ -8,12 +8,9 @@ public class VehicleCostType {
     private CostTypes type;
     @Expose
     private double value;
-    @Expose
-    private long count;
 
-    public VehicleCostType(CostTypes type, double value, long count) {
+    public VehicleCostType(CostTypes type, double value) {
         this.type = type;
         this.value = value;
-        this.count = count;
     }
 }

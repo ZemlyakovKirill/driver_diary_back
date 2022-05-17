@@ -1,5 +1,6 @@
 package ru.themlyakov.driverdiary.controllers;
 
+import com.google.gson.annotations.Expose;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Sort;
@@ -11,6 +12,7 @@ import ru.themlyakov.driverdiary.entities.UserVehicle;
 import ru.themlyakov.driverdiary.entities.Vehicle;
 import ru.themlyakov.driverdiary.entities.VehicleCosts;
 import ru.themlyakov.driverdiary.enums.CostTypes;
+import ru.themlyakov.driverdiary.enums.SearchIntervalForTypeCost;
 import ru.themlyakov.driverdiary.utils.PaginationWrapper;
 import ru.themlyakov.driverdiary.utils.Sortinger;
 import ru.themlyakov.driverdiary.utils.VehicleCostType;
@@ -20,6 +22,8 @@ import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @Validated
@@ -27,6 +31,29 @@ import java.util.*;
 public class VehicleCostController extends AbstractController {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
+
+
+    private static class VehicleTypeCostWrapper {
+        @Expose
+        private int month;
+        @Expose
+        private Map<CostTypes, Double> result;
+
+        private VehicleTypeCostWrapper(int month, Map<CostTypes, Double> result) {
+            this.month = month;
+            this.result = result;
+        }
+
+        public static VehicleTypeCostWrapper of(Collection<VehicleCosts> vehicleCosts, int month) {
+            Calendar cal = Calendar.getInstance();
+            int currYear = cal.get(Calendar.YEAR);
+            Map<CostTypes, Double> collect = vehicleCosts.stream().filter(vc -> {
+                cal.setTime(vc.getDate());
+                return cal.get(Calendar.MONTH) == month-1 && cal.get(Calendar.YEAR) == currYear;
+            }).collect(Collectors.groupingBy(o -> CostTypes.fromOrdinal(Integer.parseInt(o.getType())), Collectors.summingDouble(VehicleCosts::getValue)));
+            return new VehicleTypeCostWrapper(month,collect);
+        }
+    }
 
     //Работа с расходами пользователя
     @ApiOperation(value = "Добавление расхода транспортного средства")
@@ -54,39 +81,66 @@ public class VehicleCostController extends AbstractController {
         return responseBad("response", "Транспортное средство не найдено");
     }
 
-    @ApiOperation(value = "Просмотр всех расходов по типу")
+    @ApiOperation(value = "Просмотр помесячно расходов по типу")
     @GetMapping("/user/cost/type/all")
-    public ResponseEntity<String> allTypeCosts(Principal principal) {
+    public ResponseEntity<String> monthTypeCosts(Principal principal,
+                                               @RequestParam(name = "month", defaultValue = "1")
+                                               int month) {
+        if(month<1 || month>12){
+            throw new IllegalArgumentException("Месяц долженбыть в диапазоне от 1 до 12");
+        }
         User user = userService.findByUsername(principal.getName());
         Set<VehicleCosts> vehicleCosts = user.getCosts();
-        VehicleCostType refueling = new VehicleCostType(CostTypes.REFUELING, vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.REFUELING.toString())).map(VehicleCosts::getValue).reduce(0F, Float::sum), vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.REFUELING.toString())).count());
-        VehicleCostType washing = new VehicleCostType(CostTypes.WASHING, vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.WASHING.toString())).map(VehicleCosts::getValue).reduce(0F, Float::sum), vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.WASHING.toString())).count());
-        VehicleCostType service = new VehicleCostType(CostTypes.SERVICE, vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.SERVICE.toString())).map(VehicleCosts::getValue).reduce(0F, Float::sum), vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.SERVICE.toString())).count());
-        VehicleCostType other = new VehicleCostType(CostTypes.OTHER, vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.OTHER.toString())).map(VehicleCosts::getValue).reduce(0F, Float::sum), vehicleCosts.stream().filter(vehicleCosts1 -> vehicleCosts1.getType().equals(CostTypes.OTHER.toString())).count());
-        return responseSuccess("response", new VehicleCostType[]{refueling, washing, service, other});
+        VehicleTypeCostWrapper wrapper = VehicleTypeCostWrapper.of(vehicleCosts, month);
+        return responseSuccess("response", wrapper);
+    }
+
+    @ApiOperation(value = "Просмотр месяцев с расходами")
+    @GetMapping("/user/cost/type/month/get")
+    public ResponseEntity<String> monthTypeCosts(Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        Calendar cal = Calendar.getInstance();
+        int currYear=cal.get(Calendar.YEAR);
+        Set<Integer> months = user.getCosts().stream()
+                .filter(vc->{
+                    cal.setTime(vc.getDate());
+                    return cal.get(Calendar.YEAR)==currYear;
+                })
+                .map(vc->{
+            cal.setTime(vc.getDate());
+            return cal.get(Calendar.MONTH)+1;
+        }).collect(Collectors.toSet());
+        return responseSuccess("response", months);
     }
 
     @ApiOperation(value = "Просмотр постранично расходов списком")
     @GetMapping("/user/cost/list/paged")
     public ResponseEntity<String> pagedListCosts(Principal principal,
-                                               @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
-                                               @RequestParam(value = "page", defaultValue = "0") int page,
-                                               @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
+                                                 @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
+                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                 @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
         List<VehicleCosts> vehicleCosts = new ArrayList<>(user.getCosts());
-        PaginationWrapper wrapper=new PaginationWrapper(vehicleCosts,page,sortBy,direction);
-        return responseSuccess("response",wrapper);
+        PaginationWrapper wrapper = new PaginationWrapper(vehicleCosts, page, sortBy, direction);
+        return responseSuccess("response", wrapper);
     }
 
     @ApiOperation(value = "Просмотр всех расходов списком")
     @GetMapping("/user/cost/list/all")
     public ResponseEntity<String> allListCosts(Principal principal,
+                                               @RequestParam(value = "month",defaultValue = "1") int month,
                                                @RequestParam(value = "sortBy", defaultValue = "value") String sortBy,
                                                @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction) {
         User user = userService.findByUsername(principal.getName());
-        List<VehicleCosts> vehicleCosts = new ArrayList<>(user.getCosts());
-        Sortinger.sort(vehicleCosts,sortBy,direction);
-        return responseSuccess("response",vehicleCosts);
+        Calendar cal = Calendar.getInstance();
+        int currYear=cal.get(Calendar.YEAR);
+        List<VehicleCosts> vehicleCosts = user.getCosts().stream()
+                .filter(vc->{
+                    cal.setTime(vc.getDate());
+                    return cal.get(Calendar.YEAR)==currYear && cal.get(Calendar.MONTH)==month-1;
+                }).collect(Collectors.toList());
+        Sortinger.sort(vehicleCosts, sortBy, direction);
+        return responseSuccess("response", vehicleCosts);
     }
 
     @ApiOperation(value = "Удаление расхода")
