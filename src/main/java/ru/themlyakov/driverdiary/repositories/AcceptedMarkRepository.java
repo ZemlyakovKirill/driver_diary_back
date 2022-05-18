@@ -12,5 +12,5 @@ public interface AcceptedMarkRepository extends JpaRepository<AcceptedMark, Long
     @Query(value = "select * from accepted_mark " +
             "where sqrt(pow(lat-:lat,2)+pow(lon-:lon,2))<=4.49 " +
             "and type like :type", nativeQuery = true)
-    List<AcceptedMark> getAcceptedMarkByTypeAndLatAndLon(String type,Float lat,Float lon);
+    List<AcceptedMark> getAcceptedMarkByTypeAndLatAndLon(int type,Float lat,Float lon);
 }

@@ -23,13 +23,13 @@ public interface RequestMarkRepository extends JpaRepository<RequestMark, Long> 
 
     @Query(value = "select * from request_mark " +
             "where sqrt(pow(lat-:lat,2)+pow(lon-:lon,2))<=4.49 " +
-            "and type like :type", nativeQuery = true)
-    List<RequestMark> getRequestMarksInRadius(Float lat, Float lon, String type);
+            "and type=:type", nativeQuery = true)
+    List<RequestMark> getRequestMarksInRadius(Float lat, Float lon, int type);
 
     @Modifying
     @Transactional
     @Query(value = "delete from request_mark " +
             "where sqrt(pow(lat-:lat,2)+pow(lon-:lon,2))<=4.49 " +
-            "and type like :type", nativeQuery = true)
-    void deleteInRadius(Float lat, Float lon, String type);
+            "and type=:type", nativeQuery = true)
+    void deleteInRadius(Float lat, Float lon, int type);
 }

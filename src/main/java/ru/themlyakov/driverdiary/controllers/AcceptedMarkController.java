@@ -23,13 +23,12 @@ import java.util.Map;
 public class AcceptedMarkController extends AbstractController{
     @ApiOperation(value = "Получение пользовательских меток")
     @GetMapping("/user/mark/get")
-    public ResponseEntity<String> getMarks(@RequestParam("lat") Float lat, @RequestParam("lon") Float lon, @RequestParam("type") String type) throws ValidationException {
+    public ResponseEntity<String> getMarks(@RequestParam("lat") Float lat, @RequestParam("lon") Float lon, @RequestParam("type") SearchTypeMarks type) throws ValidationException {
         try {
-            SearchTypeMarks typeEnum = SearchTypeMarks.valueOf(type);
-            SearchMarks sm = new SearchMarks(typeEnum, lat, lon);
+            SearchMarks sm = new SearchMarks(type, lat, lon);
             List<AcceptedMark> responseMarks = sm.search();
-            responseMarks.addAll(acceptedMarkRepository.getAcceptedMarkByTypeAndLatAndLon(type,lat,lon));
-            List<RequestMark> requestMarks = requestMarkRepository.getRequestMarksInRadius(lat, lon, type);
+            responseMarks.addAll(acceptedMarkRepository.getAcceptedMarkByTypeAndLatAndLon(type.ordinal(),lat,lon));
+            List<RequestMark> requestMarks = requestMarkRepository.getRequestMarksInRadius(lat, lon, type.ordinal());
             Map<String,Object> response=Map.of(
                     "accepted",responseMarks,
                     "requested",requestMarks
