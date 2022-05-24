@@ -1,21 +1,13 @@
 package ru.themlyakov.driverdiary.parsers;
 
-import com.kwabenaberko.newsapilib.NewsApiClient;
-import com.kwabenaberko.newsapilib.models.Article;
-import com.kwabenaberko.newsapilib.models.request.TopHeadlinesRequest;
-import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
-import ru.themlyakov.driverdiary.entities.News;
-import ru.themlyakov.driverdiary.repositories.UserNewsRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.kwabenaberko.newsapilib.NewsApiClient;
+import com.kwabenaberko.newsapilib.models.Article;
+import com.kwabenaberko.newsapilib.models.request.EverythingRequest;
+import com.kwabenaberko.newsapilib.models.request.TopHeadlinesRequest;
+import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
 import lombok.extern.java.Log;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +15,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.themlyakov.driverdiary.entities.News;
+import ru.themlyakov.driverdiary.repositories.UserNewsRepository;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 @Component
 @Log
@@ -50,15 +37,16 @@ public class NewsParse {
     public final Logger logger = LoggerFactory.getLogger(NewsParse.class);
     private static final NewsApiClient newsApiClient=new NewsApiClient("491232aa2bf24e649b0d8a0e7224682a");
     private static final SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd'T'h:m:s'Z'");
+    private static final SimpleDateFormat searchDateFormat=new SimpleDateFormat("yyyy-MM-dd");
 
     @Async("schedulePool1")
     @Scheduled(fixedRate = 1_200_000)
     public void updateNews() {
             logger.info("Parsing news...");
-            newsApiClient.getTopHeadlines(
-                    new TopHeadlinesRequest.Builder()
-                            .q("vehicle")
-                            .language("ru")
+            newsApiClient.getEverything(
+                    new EverythingRequest.Builder()
+                            .q("транспорт")
+                            .from(searchDateFormat.format(new Date()))
                             .build(),
                     new NewsApiClient.ArticlesResponseCallback() {
                         @Override
